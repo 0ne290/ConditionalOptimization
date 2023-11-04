@@ -1,0 +1,15 @@
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.csproj.AssemblyReference.cache
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.AssemblyInfoInputs.cache
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.AssemblyInfo.cs
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.csproj.CoreCompileInputs.cache
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Logic.deps.json
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Logic.dll
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Logic.pdb
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Interfaces.dll
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Interfaces.pdb
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.csproj.CopyComplete
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.dll
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\refint\ConditionalOptimization.Logic.dll
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.pdb
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ref\ConditionalOptimization.Logic.dll

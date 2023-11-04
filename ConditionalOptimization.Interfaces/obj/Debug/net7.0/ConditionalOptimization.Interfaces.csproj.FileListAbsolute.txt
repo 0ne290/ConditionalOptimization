@@ -1,0 +1,12 @@
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\obj\Debug\net7.0\ConditionalOptimization.Interfaces.csproj.AssemblyReference.cache
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\obj\Debug\net7.0\ConditionalOptimization.Interfaces.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\obj\Debug\net7.0\ConditionalOptimization.Interfaces.AssemblyInfoInputs.cache
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\obj\Debug\net7.0\ConditionalOptimization.Interfaces.AssemblyInfo.cs
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\obj\Debug\net7.0\ConditionalOptimization.Interfaces.csproj.CoreCompileInputs.cache
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\bin\Debug\net7.0\ConditionalOptimization.Interfaces.deps.json
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\bin\Debug\net7.0\ConditionalOptimization.Interfaces.dll
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\bin\Debug\net7.0\ConditionalOptimization.Interfaces.pdb
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\obj\Debug\net7.0\ConditionalOptimization.Interfaces.dll
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\obj\Debug\net7.0\refint\ConditionalOptimization.Interfaces.dll
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\obj\Debug\net7.0\ConditionalOptimization.Interfaces.pdb
+C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Interfaces\obj\Debug\net7.0\ref\ConditionalOptimization.Interfaces.dll
