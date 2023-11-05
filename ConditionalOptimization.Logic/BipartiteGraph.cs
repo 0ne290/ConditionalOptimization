@@ -25,21 +25,39 @@ public class BipartiteGraph
 					_leftVertices[i].EdgeAdd(_rightVertices[j]);
 	}
 	
-	public List<IEdge> FordFulkersonAlgorithm()
+	public IEdge[]? FordFulkersonAlgorithm()
 	{
-		var predPath, nextPath = DeepFirstSearch();
-		while (nextPath != null)
-		{
-			predPath = nextPath;
-			nextPath = DeepFirsrSearch();
-		}
-		return predPath;
-	}
-	private List<IEsge> DeepFirstSearh()
-	{
-		var path = new Stack<IEdge>();
+		IEdge[]? predPath = null;
+		var nextPath = new Stack<IEdge?>();
+		var forks = new Stack<IVertex?>();
 		var fork = _source;
-		while (
+		List<IEdge> edges;
+		
+		forks.Push(null);
+		nextPath.Push(null);
+		
+		while (fork != null)
+		{
+			edges = fork.Edges;
+			foreach (var edge in edges)
+			{
+				if (edge.Flow != edge.Capacity)
+				{
+					nextPath.Push(edge);
+					forks.Push(fork);
+					fork = edge.DestinationVertex;
+					if (fork == _drain)
+						break;
+					edges = fork.Edges;
+				}
+			}
+
+			predPath = nextPath.ToArray();
+			fork = forks.Pop();
+			nextPath.Pop();
+		}
+
+		return predPath;
 	}
 		
 	public bool[,] AdjacencyMatrix
