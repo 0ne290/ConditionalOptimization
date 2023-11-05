@@ -37,18 +37,9 @@ public class BipartiteGraph
 	}
 	private List<IEsge> DeepFirstSearh()
 	{
-		var path = new List<edge>();
-		var edges = fork.Edges;
-		path.Add(nextPath);
-		var nextVertex = nextEdge.DestinationVertex;
-		while (fork != desiredVertex)
-		{
-			if (i > edges.Count)
-				
-			nextPath = nextVertex.Edges[i];
-			i++
-			fork = nextPath.DestinationVertex;
-		}
+		var path = new Stack<IEdge>();
+		var fork = _source;
+		while (
 	}
 		
 	public bool[,] AdjacencyMatrix
@@ -57,7 +48,7 @@ public class BipartiteGraph
 		set
 		{
 			if (value.GetLength(0) != value.GetLength(1))
-				throw new Exception("The incidence matrix must be square");
+				throw new Exception("The incidence matrix must be squarmmmmmm
 			else
 				_adjacencyMatrix = value;
 		}
