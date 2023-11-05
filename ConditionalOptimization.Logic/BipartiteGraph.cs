@@ -32,6 +32,7 @@ public class BipartiteGraph
 		var forks = new Stack<IVertex?>();
 		var fork = _source;
 		List<IEdge> edges;
+		IEdge edge;
 		
 		forks.Push(null);
 		nextPath.Push(null);
@@ -39,10 +40,13 @@ public class BipartiteGraph
 		while (fork != null)
 		{
 			edges = fork.Edges;
-			foreach (var edge in edges)
+			for (int i = 0; i < edges.Count; i++)
 			{
+				edge = edges[i];
 				if (edge.Flow != edge.Capacity)
 				{
+					i = 0;
+					edge.Flow += 1;
 					nextPath.Push(edge);
 					forks.Push(fork);
 					fork = edge.DestinationVertex;
@@ -59,14 +63,35 @@ public class BipartiteGraph
 
 		return predPath;
 	}
-		
+
+	public List<IVertex> DeepFirstSearch()
+	{
+		var vehicles = new List<IVertex>();
+		var forks = new Stack<IVertex?>();
+		forks.Push(null);
+		IVertex? fork = _source;
+		List<IEdge> edges;
+		while (fork != null)
+		{
+			edges = fork.Edges;
+			foreach (var edge in edges)
+			{
+				if (edge.Flow != edge.Capacity)
+				{
+					
+					fork = edge.DestinationVertex;
+				}
+			}
+		}
+	}
+	
 	public bool[,] AdjacencyMatrix
 	{
 		get => _adjacencyMatrix;
 		set
 		{
 			if (value.GetLength(0) != value.GetLength(1))
-				throw new Exception("The incidence matrix must be squarmmmmmm
+				throw new Exception("The incidence matrix must be square");
 			else
 				_adjacencyMatrix = value;
 		}

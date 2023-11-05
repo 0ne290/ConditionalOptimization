@@ -19,9 +19,8 @@ class Program
 		bipartiteGraph.ConstructGraph();
 		//bipartiteGraph.BreadthFirstSearch();
 		var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
-		foreach (var vertex in greatestMatching)
-			Console.Write($"{vertex.Id} ");
-		
+		foreach (var edge in greatestMatching)
+			Console.Write($"{edge.BeginningVertex.Id} --> {edge.DestinationVertex.Id}");
 		
 		Console.WriteLine();
 		Console.Write("Для завершения программы нажмите любую клавишу...");

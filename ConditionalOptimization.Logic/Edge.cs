@@ -52,6 +52,5 @@ public class Edge : IEdge
 		}
 	}
 	
-	private int? _capacity;
-	private int _flow;
+	private int? _capacity, _flow;
 }
