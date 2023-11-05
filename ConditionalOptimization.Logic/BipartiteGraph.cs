@@ -27,29 +27,19 @@ public class BipartiteGraph
 	
 	public List<IEdge> FordFulkersonAlgorithm()
 	{
-		List<IEdge> maximumMatching;
-		
-		maximumMatching = DeepFirstSearch(ref maximumMatching)
+		var predPath, nextPath = DeepFirstSearch();
+		while (nextPath != null)
+		{
+			predPath = nextPath;
+			nextPath = DeepFirsrSearch();
+		}
+		return predPath;
 	}
-	private List<IEdge> DeepFirstSearch(IVertex vertex, IVertex desiredIVertex, Predicate<IVertex> skipCondition, ref List<IVertex> path)
+	private List<IEsge> DeepFirstSearh()
 	{
-		foreach (var edge in vertex.Edges)
-			if (edge.DestinationVertex.Flow != edge.DestinationVertex.Capacity)
-				{
-					Console.WriteLine($"{edge.DestinationVertex.Flow} {edge.DestinationVertex.Capacity} {edge.DestinationVertex.Id}");
-					DeepFirstSearch(edge.DestinationVertex, desiredIVertex, skipCondition, ref path);
-				}
 		
-		path.Add(vertex);
-		if (vertex != desiredIVertex)
-			foreach (var edge in vertex.Edges)
-				if (!skipCondition(edge.DestinationVertex))
-				{
-					Console.WriteLine($"{edge.DestinationVertex.Flow} {edge.DestinationVertex.Capacity} {edge.DestinationVertex.Id}");
-					DeepFirstSearch(edge.DestinationVertex, desiredIVertex, skipCondition, ref path);
-				}
 	}
-	
+		
 	public bool[,] AdjacencyMatrix
 	{
 		get => _adjacencyMatrix;
