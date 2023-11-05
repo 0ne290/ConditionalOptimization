@@ -37,7 +37,18 @@ public class BipartiteGraph
 	}
 	private List<IEsge> DeepFirstSearh()
 	{
-		
+		var path = new List<edge>();
+		var edges = fork.Edges;
+		path.Add(nextPath);
+		var nextVertex = nextEdge.DestinationVertex;
+		while (fork != desiredVertex)
+		{
+			if (i > edges.Count)
+				
+			nextPath = nextVertex.Edges[i];
+			i++
+			fork = nextPath.DestinationVertex;
+		}
 	}
 		
 	public bool[,] AdjacencyMatrix
