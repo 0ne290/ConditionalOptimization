@@ -2,22 +2,9 @@
   "version": 3,
   "targets": {
     "net7.0": {
-      "ConditionalOptimization.Interfaces/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v7.0",
-        "compile": {
-          "bin/placeholder/ConditionalOptimization.Interfaces.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/ConditionalOptimization.Interfaces.dll": {}
-        }
-      },
       "ConditionalOptimization.Logic/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
-        "dependencies": {
-          "ConditionalOptimization.Interfaces": "1.0.0"
-        },
         "compile": {
           "bin/placeholder/ConditionalOptimization.Logic.dll": {}
         },
@@ -28,11 +15,6 @@
     }
   },
   "libraries": {
-    "ConditionalOptimization.Interfaces/1.0.0": {
-      "type": "project",
-      "path": "../ConditionalOptimization.Interfaces/ConditionalOptimization.Interfaces.csproj",
-      "msbuildProject": "../ConditionalOptimization.Interfaces/ConditionalOptimization.Interfaces.csproj"
-    },
     "ConditionalOptimization.Logic/1.0.0": {
       "type": "project",
       "path": "../ConditionalOptimization.Logic/ConditionalOptimization.Logic.csproj",
@@ -41,7 +23,6 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "ConditionalOptimization.Interfaces >= 1.0.0",
       "ConditionalOptimization.Logic >= 1.0.0"
     ]
   },
@@ -72,9 +53,6 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\lenya\\source\\repos\\ConditionalOptimization\\ConditionalOptimization.Interfaces\\ConditionalOptimization.Interfaces.csproj": {
-              "projectPath": "C:\\Users\\lenya\\source\\repos\\ConditionalOptimization\\ConditionalOptimization.Interfaces\\ConditionalOptimization.Interfaces.csproj"
-            },
             "C:\\Users\\lenya\\source\\repos\\ConditionalOptimization\\ConditionalOptimization.Logic\\ConditionalOptimization.Logic.csproj": {
               "projectPath": "C:\\Users\\lenya\\source\\repos\\ConditionalOptimization\\ConditionalOptimization.Logic\\ConditionalOptimization.Logic.csproj"
             }

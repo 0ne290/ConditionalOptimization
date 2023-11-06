@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConditionalOptimization.Interfaces", "ConditionalOptimization.Interfaces\ConditionalOptimization.Interfaces.csproj", "{FAB9D86F-A2F2-49A5-9459-C3B302E6091A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConditionalOptimization.Logic", "ConditionalOptimization.Logic\ConditionalOptimization.Logic.csproj", "{227A7524-DE7A-4394-B4B2-2EDD23B92A95}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConditionalOptimization.UiConsole", "ConditionalOptimization.UiConsole\ConditionalOptimization.UiConsole.csproj", "{8AF326DD-7128-4CE9-8ABB-00A60983489F}"
@@ -18,10 +16,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FAB9D86F-A2F2-49A5-9459-C3B302E6091A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FAB9D86F-A2F2-49A5-9459-C3B302E6091A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FAB9D86F-A2F2-49A5-9459-C3B302E6091A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FAB9D86F-A2F2-49A5-9459-C3B302E6091A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{227A7524-DE7A-4394-B4B2-2EDD23B92A95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{227A7524-DE7A-4394-B4B2-2EDD23B92A95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{227A7524-DE7A-4394-B4B2-2EDD23B92A95}.Release|Any CPU.ActiveCfg = Release|Any CPU

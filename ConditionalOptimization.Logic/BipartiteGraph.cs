@@ -1,103 +1,84 @@
-using ConditionalOptimization.Interfaces;
-
 namespace ConditionalOptimization.Logic;
 
 public class BipartiteGraph
 {
-	public void ConstructGraph()
+	public BipartiteGraph(bool[,] adjacencyMatrix)
 	{
-		_leftVertices = new IVertex[AdjacencyMatrix.GetLength(0)];
-		_rightVertices = new IVertex[AdjacencyMatrix.GetLength(0)];
-		_source = new Vertex();
-		_drain = new Vertex();
+		AdjacencyMatrix = adjacencyMatrix;
+		ReconstructGraph();
+	}
+	
+	public void ReconstructGraph()
+	{
+		_leftVertices = new Vertex[AdjacencyMatrix.GetLength(0)];
+		_rightVertices = new Vertex[AdjacencyMatrix.GetLength(0)];
+		Source = new Vertex();
+		Drain = new Vertex();
 		
 		for (int i = 0; i < AdjacencyMatrix.GetLength(0); i++)
 		{
 			_leftVertices[i] = new Vertex();
-			_source.EdgeAdd(_leftVertices[i]);
+			Source.AddStraightEdge(_leftVertices[i]);
 			_rightVertices[i] = new Vertex();
-			_rightVertices[i].EdgeAdd(_drain);
+			_rightVertices[i].AddStraightEdge(Drain);
 		}
 		
 		for (int i = 0; i < AdjacencyMatrix.GetLength(0); i++)
 			for (int j = 0; j < AdjacencyMatrix.GetLength(0); j++)
 				if (AdjacencyMatrix[i, j])
-					_leftVertices[i].EdgeAdd(_rightVertices[j]);
+					_leftVertices[i].AddStraightEdge(_rightVertices[j]);
 	}
 	
-	public IEdge[]? FordFulkersonAlgorithm()
+	public List<Vertex> FordFulkersonAlgorithm()
 	{
-		IEdge[]? predPath = null;
-		var nextPath = new Stack<IEdge?>();
-		var forks = new Stack<IVertex?>();
-		var fork = _source;
-		List<IEdge> edges;
-		IEdge edge;
-		
-		forks.Push(null);
-		nextPath.Push(null);
-		
-		while (fork != null)
+		var copyOfGraph = new BipartiteGraph(AdjacencyMatrix);
+		var path = DepthFirstSearch(copyOfGraph.Source);
+		var maximumMatching;
+
+		while (path != null)
 		{
-			edges = fork.Edges;
-			for (int i = 0; i < edges.Count; i++)
-			{
-				edge = edges[i];
-				if (edge.Flow != edge.Capacity)
-				{
-					i = 0;
-					edge.Flow += 1;
-					nextPath.Push(edge);
-					forks.Push(fork);
-					fork = edge.DestinationVertex;
-					if (fork == _drain)
-						break;
-					edges = fork.Edges;
-				}
-			}
-
-			predPath = nextPath.ToArray();
-			fork = forks.Pop();
-			nextPath.Pop();
+			maximumMatching = path;
+			
 		}
-
-		return predPath;
 	}
-
-	public List<IVertex> DeepFirstSearch()
+	private List<Vertex> DepthFirstSearch(Vertex source, Vertex targetVertex)
 	{
-		var vehicles = new List<IVertex>();
-		var forks = new Stack<IVertex?>();
-		forks.Push(null);
-		IVertex? fork = _source;
-		List<IEdge> edges;
-		while (fork != null)
+		var forks = new Stack<Vertex>();
+		forks.Push(source);
+		Vertex fork;
+		List<Vertex> path = new List<Vertex>();
+
+		while (forks.Count > 0)
 		{
-			edges = fork.Edges;
-			foreach (var edge in edges)
-			{
-				if (edge.Flow != edge.Capacity)
-				{
-					
-					fork = edge.DestinationVertex;
-				}
-			}
+			fork = forks.Pop();
+			fork.Visited = true;
+			path.Add(fork);
+			
+			if (fork == targetVertex)
+				break;
+			
+			foreach (var vertex in fork.AdjacentVertices)
+				if (!vertex.Visited)
+					forks.Push(vertex);
 		}
+
+		foreach (var vertex in path)
+			vertex.Visited = false;
 	}
 	
 	public bool[,] AdjacencyMatrix
 	{
-		get => _adjacencyMatrix;
+		get => (bool[,])_adjacencyMatrix.Clone();
 		set
 		{
 			if (value.GetLength(0) != value.GetLength(1))
 				throw new Exception("The incidence matrix must be square");
-			else
-				_adjacencyMatrix = value;
+			_adjacencyMatrix = value;
 		}
 	}
+	public Vertex Source { get; private set; }
+	public Vertex Drain { get; private set; }
 	
 	private bool[,] _adjacencyMatrix;
-	private IVertex[] _leftVertices, _rightVertices;
-	private IVertex _source, _drain;
+	private Vertex[] _leftVertices, _rightVertices;
 }

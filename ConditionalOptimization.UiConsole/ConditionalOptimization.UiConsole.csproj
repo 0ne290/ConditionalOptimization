@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\ConditionalOptimization.Interfaces\ConditionalOptimization.Interfaces.csproj" />
     <ProjectReference Include="..\ConditionalOptimization.Logic\ConditionalOptimization.Logic.csproj" />
   </ItemGroup>
 
