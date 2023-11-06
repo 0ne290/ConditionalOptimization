@@ -32,14 +32,24 @@ public class BipartiteGraph
 	public List<Vertex> FordFulkersonAlgorithm()
 	{
 		var copyOfGraph = new BipartiteGraph(AdjacencyMatrix);
-		var path = DepthFirstSearch(copyOfGraph.Source);
-		var maximumMatching;
+		var path = DepthFirstSearch(copyOfGraph.Source, copyOfGraph.Drain);
+		List<Vertex> maximumMatching;
 
-		while (path != null)
+		while (path.Count > 0)
 		{
 			maximumMatching = path;
 			
+			foreach (var leftVertex in path.Intersect(LeftVertices))
+				copyOfGraph.Source.DeleteEdge(leftVertex);
+			foreach (var rightVertex in path.Intersect(RightVertices))
+				rightVertex.DeleteEdge(copyOfGraph.Drain);
+			for (int i = 0; i < path.Count - 1; i++)
+				path[i].InverseEdge(path[i + 1]);
+
+			path = DepthFirstSearch(copyOfGraph.Source, copyOfGraph.Drain);
 		}
+
+		return path;
 	}
 	private List<Vertex> DepthFirstSearch(Vertex source, Vertex targetVertex)
 	{
@@ -64,6 +74,10 @@ public class BipartiteGraph
 
 		foreach (var vertex in path)
 			vertex.Visited = false;
+		path.Remove(source);
+		path.Remove(targetVertex);
+
+		return path;
 	}
 	
 	public bool[,] AdjacencyMatrix
