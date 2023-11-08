@@ -32,7 +32,7 @@ public class BipartiteGraph
 	public List<Vertex> FordFulkersonAlgorithm()
 	{
 		var copyOfGraph = new BipartiteGraph(AdjacencyMatrix);
-		var path = DepthFirstSearch(copyOfGraph.Source, copyOfGraph.Drain);
+		var path = DepthFirstSearch(copyOfGraph.Source!, copyOfGraph.Drain!);
 		var maximumMatching = path;
 
 		while (path.Count > 0)
@@ -42,14 +42,14 @@ public class BipartiteGraph
 			foreach (var leftVertex in path.Intersect(copyOfGraph.LeftVertices))
 			{
 				Console.WriteLine(leftVertex.Id);
-				copyOfGraph.Source.DeleteEdge(leftVertex);
+				copyOfGraph.Source!.DeleteEdge(leftVertex);
 			}
 			foreach (var rightVertex in path.Intersect(copyOfGraph.RightVertices))
-				rightVertex.DeleteEdge(copyOfGraph.Drain);
-			for (int i = 0; i < path.Count - 1; i++)
+				rightVertex.DeleteEdge(copyOfGraph.Drain!);
+			for (var i = 0; i < path.Count - 1; i++)
 				path[i].InvertEdge(path[i + 1]);
 
-			path = DepthFirstSearch(copyOfGraph.Source, copyOfGraph.Drain);
+			path = DepthFirstSearch(copyOfGraph.Source!, copyOfGraph.Drain!);
 		}
 
 		return maximumMatching;
@@ -87,7 +87,7 @@ public class BipartiteGraph
 	
 	public bool[,] AdjacencyMatrix
 	{
-		get => (bool[,])_adjacencyMatrix.Clone();
+		get => (bool[,])_adjacencyMatrix!.Clone();
 		set
 		{
 			if (value.GetLength(0) != value.GetLength(1))
@@ -96,11 +96,11 @@ public class BipartiteGraph
 		}
 	}
 
-    public Vertex[] LeftVertices => (Vertex[])_leftVertices.Clone();
-	public Vertex[] RightVertices => (Vertex[])_rightVertices.Clone();
-    public Vertex Source { get; private set; }
-	public Vertex Drain { get; private set; }
+    public Vertex[] LeftVertices => (Vertex[])_leftVertices!.Clone();
+	public Vertex[] RightVertices => (Vertex[])_rightVertices!.Clone();
+    public Vertex? Source { get; private set; }
+	public Vertex? Drain { get; private set; }
 	
-	private bool[,] _adjacencyMatrix;
-	private Vertex[] _leftVertices, _rightVertices;
+	private bool[,]? _adjacencyMatrix;
+	private Vertex[]? _leftVertices, _rightVertices;
 }
