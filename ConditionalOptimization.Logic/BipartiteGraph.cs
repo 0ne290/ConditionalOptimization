@@ -35,14 +35,15 @@ public class BipartiteGraph
 		while (path.Count > 0)
 		{
 			maximumMatching = path;
-			
-			foreach (var leftVertex in path.Intersect(copyOfGraph.LeftVertices))
-			{
-				Console.WriteLine(leftVertex.Id);
-				copyOfGraph.Source!.DeleteEdge(leftVertex);
-			}
-			foreach (var rightVertex in path.Intersect(copyOfGraph.RightVertices))
-				rightVertex.DeleteEdge(copyOfGraph.Drain!);
+
+            path.Intersect(copyOfGraph.LeftVertices).ToList().ForEach(leftVertex =>
+            {
+                Console.WriteLine(leftVertex.Id);
+                copyOfGraph.Source!.DeleteEdge(leftVertex);
+            });
+
+            path.Intersect(copyOfGraph.RightVertices).ToList().ForEach(rightVertex => rightVertex.DeleteEdge(copyOfGraph.Drain!));
+				
 			for (var i = 0; i < path.Count - 1; i++)
 				path[i].InvertEdge(path[i + 1]);
 
@@ -54,9 +55,9 @@ public class BipartiteGraph
 	public List<Vertex> DepthFirstSearch(Vertex source, Vertex targetVertex)
 	{
 		var forks = new Stack<Vertex>();
-		forks.Push(source);
         var path = new List<Vertex>();
 
+        forks.Push(source);
 		while (forks.Count > 0)
 		{
 			var fork = forks.Pop();
@@ -73,20 +74,15 @@ public class BipartiteGraph
             });
         }
 
-		foreach (var vertex in path)
-			vertex.Visited = false;
-			
+        path.ForEach(vertex => vertex.Visited = false);
+	
 		path.Remove(source);
 		path.Remove(targetVertex);
 
 		return path;
 	}
 
-    public void PrintGraph(List<Vertex> graph)
-    {
-        foreach (var vertex in graph)
-            Console.Write($"{vertex.Id} --> ");
-    }
+    public void PrintGraph(List<Vertex> graph) => graph.ForEach(vertex => Console.Write($"{vertex.Id} --> "));
 
     public bool[,] AdjacencyMatrix
 	{
