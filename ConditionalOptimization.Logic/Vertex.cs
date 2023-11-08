@@ -6,7 +6,7 @@ public class Vertex
 	{
 		Id = _counter;
 		_counter++;
-		AdjacentVertices = new List<Vertex>();
+		_adjacentVertices = new List<Vertex>();
 		Visited = false;
 	}
 
@@ -21,9 +21,9 @@ public class Vertex
 	}
 	public void AddStraightEdge(Vertex vertex)
 	{
-		if (AdjacentVertices.Contains(vertex))
+		if (_adjacentVertices.Contains(vertex))
 			throw new Exception("The specified vertex is already adjacent to this vertex");
-		AdjacentVertices.Add(vertex);
+		_adjacentVertices.Add(vertex);
 	}
 	
 	public void InvertEdge(Vertex adjacentVertex)
@@ -33,8 +33,9 @@ public class Vertex
 	}
 	public void DeleteEdge(Vertex adjacentVertex)
 	{
-		if (!AdjacentVertices.Remove(adjacentVertex))
-			throw new Exception("The specified vertex is not adjacent to the this vertex");
+		if (!_adjacentVertices.Remove(adjacentVertex))
+			Console.WriteLine("Suuupir");
+			//throw new Exception("The specified vertex is not adjacent to the this vertex");
 	}
 	
 	public int Id { get; private set; }

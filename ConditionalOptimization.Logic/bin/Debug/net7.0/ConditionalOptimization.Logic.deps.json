@@ -7,27 +7,14 @@
   "targets": {
     ".NETCoreApp,Version=v7.0": {
       "ConditionalOptimization.Logic/1.0.0": {
-        "dependencies": {
-          "ConditionalOptimization.Interfaces": "1.0.0"
-        },
         "runtime": {
           "ConditionalOptimization.Logic.dll": {}
-        }
-      },
-      "ConditionalOptimization.Interfaces/1.0.0": {
-        "runtime": {
-          "ConditionalOptimization.Interfaces.dll": {}
         }
       }
     }
   },
   "libraries": {
     "ConditionalOptimization.Logic/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "ConditionalOptimization.Interfaces/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

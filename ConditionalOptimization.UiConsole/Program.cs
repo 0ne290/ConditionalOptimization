@@ -14,13 +14,11 @@ class Program
 			{ true, true, false, false }
 		};
 		
-        var bipartiteGraph = new BipartiteGraph();
-		bipartiteGraph.AdjacencyMatrix = adjacencyMatrix;
-		bipartiteGraph.ConstructGraph();
-		//bipartiteGraph.BreadthFirstSearch();
+        var bipartiteGraph = new BipartiteGraph(adjacencyMatrix);
 		var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
-		foreach (var edge in greatestMatching)
-			Console.Write($"{edge.BeginningVertex.Id} --> {edge.DestinationVertex.Id}");
+		//var greatestMatching = bipartiteGraph.DepthFirstSearch(bipartiteGraph.Source, bipartiteGraph.Drain);
+		foreach (var vertex in greatestMatching)
+			Console.Write($"{vertex.Id} --> ");
 		
 		Console.WriteLine();
 		Console.Write("Для завершения программы нажмите любую клавишу...");

@@ -8,9 +8,7 @@ C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiCo
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiConsole\bin\Debug\net7.0\ConditionalOptimization.UiConsole.runtimeconfig.json
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiConsole\bin\Debug\net7.0\ConditionalOptimization.UiConsole.dll
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiConsole\bin\Debug\net7.0\ConditionalOptimization.UiConsole.pdb
-C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiConsole\bin\Debug\net7.0\ConditionalOptimization.Interfaces.dll
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiConsole\bin\Debug\net7.0\ConditionalOptimization.Logic.dll
-C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiConsole\bin\Debug\net7.0\ConditionalOptimization.Interfaces.pdb
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiConsole\bin\Debug\net7.0\ConditionalOptimization.Logic.pdb
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiConsole\obj\Debug\net7.0\ConditionalOptimization.UiConsole.csproj.CopyComplete
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.UiConsole\obj\Debug\net7.0\ConditionalOptimization.UiConsole.dll

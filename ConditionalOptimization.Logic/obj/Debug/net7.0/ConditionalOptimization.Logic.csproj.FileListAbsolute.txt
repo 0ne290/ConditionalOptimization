@@ -6,9 +6,6 @@ C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logi
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Logic.deps.json
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Logic.dll
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Logic.pdb
-C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Interfaces.dll
-C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\bin\Debug\net7.0\ConditionalOptimization.Interfaces.pdb
-C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.csproj.CopyComplete
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.dll
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\refint\ConditionalOptimization.Logic.dll
 C:\Users\lenya\source\repos\ConditionalOptimization\ConditionalOptimization.Logic\obj\Debug\net7.0\ConditionalOptimization.Logic.pdb
