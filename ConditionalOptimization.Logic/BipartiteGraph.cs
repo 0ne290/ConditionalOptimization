@@ -2,20 +2,16 @@ namespace ConditionalOptimization.Logic;
 
 public class BipartiteGraph
 {
-	public BipartiteGraph(bool[,] adjacencyMatrix)
-	{
-		AdjacencyMatrix = adjacencyMatrix;
-		ReconstructGraph();
-	}
-	
-	public void ReconstructGraph()
-	{
-		_leftVertices = new Vertex[AdjacencyMatrix.GetLength(0)];
-		_rightVertices = new Vertex[AdjacencyMatrix.GetLength(0)];
+	public void ReconstructGraph(bool[,] adjacencyMatrix)
+    {
+        AdjacencyMatrix = adjacencyMatrix;
+        var length = AdjacencyMatrix.GetLength(0);
+        _leftVertices = new Vertex[length];
+		_rightVertices = new Vertex[length];
 		Source = new Vertex();
 		Drain = new Vertex();
 		
-		for (int i = 0; i < AdjacencyMatrix.GetLength(0); i++)
+		for (var i = 0; i < length; i++)
 		{
 			_leftVertices[i] = new Vertex();
 			Source.AddStraightEdge(_leftVertices[i]);
@@ -23,16 +19,17 @@ public class BipartiteGraph
 			_rightVertices[i].AddStraightEdge(Drain);
 		}
 		
-		for (var i = 0; i < AdjacencyMatrix.GetLength(0); i++)
-			for (var j = 0; j < AdjacencyMatrix.GetLength(0); j++)
+		for (var i = 0; i < length; i++)
+			for (var j = 0; j < length; j++)
 				if (AdjacencyMatrix[i, j])
 					_leftVertices[i].AddStraightEdge(_rightVertices[j]);
 	}
 	
 	public List<Vertex> FordFulkersonAlgorithm()
 	{
-		var copyOfGraph = new BipartiteGraph(AdjacencyMatrix);
-		var path = DepthFirstSearch(copyOfGraph.Source!, copyOfGraph.Drain!);
+		var copyOfGraph = new BipartiteGraph();
+		copyOfGraph.ReconstructGraph(AdjacencyMatrix);
+        var path = DepthFirstSearch(copyOfGraph.Source!, copyOfGraph.Drain!);
 		var maximumMatching = path;
 
 		while (path.Count > 0)
@@ -84,8 +81,14 @@ public class BipartiteGraph
 
 		return path;
 	}
-	
-	public bool[,] AdjacencyMatrix
+
+    public void PrintGraph(List<Vertex> graph)
+    {
+        foreach (var vertex in graph)
+            Console.Write($"{vertex.Id} --> ");
+    }
+
+    public bool[,] AdjacencyMatrix
 	{
 		get => (bool[,])_adjacencyMatrix!.Clone();
 		set

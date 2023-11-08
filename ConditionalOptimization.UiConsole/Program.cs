@@ -6,7 +6,7 @@ class Program
 {
     static void Main()
     {
-		var adjacencyMatrix = new bool[4, 4]
+		var adjacencyMatrix = new[,]
 		{
 			{ true, true, true, true },
 			{ false, true, true, true },
@@ -14,11 +14,10 @@ class Program
 			{ true, true, false, false }
 		};
 		
-        var bipartiteGraph = new BipartiteGraph(adjacencyMatrix);
+        var bipartiteGraph = new BipartiteGraph();
+		bipartiteGraph.ReconstructGraph(adjacencyMatrix);
 		var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
-		//var greatestMatching = bipartiteGraph.DepthFirstSearch(bipartiteGraph.Source, bipartiteGraph.Drain);
-		foreach (var vertex in greatestMatching)
-			Console.Write($"{vertex.Id} --> ");
+		bipartiteGraph.PrintGraph(greatestMatching);
 		
 		Console.WriteLine();
 		Console.Write("Для завершения программы нажмите любую клавишу...");

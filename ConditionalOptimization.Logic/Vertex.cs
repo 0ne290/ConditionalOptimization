@@ -10,15 +10,11 @@ public class Vertex
 		Visited = false;
 	}
 
-	//public void AddAnUndirectedEdge(Vertex vertex)
-	//{
-	//	AddStraightEdge(vertex);
-	//	AddBackEdge(vertex);
-	//}
-	public void AddBackEdge(Vertex vertex)
+    public void AddBackEdge(Vertex vertex)
 	{
 		vertex.AddStraightEdge(this);
 	}
+
 	public void AddStraightEdge(Vertex vertex)
 	{
 		if (_adjacentVertices.Contains(vertex))
