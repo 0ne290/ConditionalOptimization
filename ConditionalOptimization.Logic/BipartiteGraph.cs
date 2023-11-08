@@ -23,8 +23,8 @@ public class BipartiteGraph
 			_rightVertices[i].AddStraightEdge(Drain);
 		}
 		
-		for (int i = 0; i < AdjacencyMatrix.GetLength(0); i++)
-			for (int j = 0; j < AdjacencyMatrix.GetLength(0); j++)
+		for (var i = 0; i < AdjacencyMatrix.GetLength(0); i++)
+			for (var j = 0; j < AdjacencyMatrix.GetLength(0); j++)
 				if (AdjacencyMatrix[i, j])
 					_leftVertices[i].AddStraightEdge(_rightVertices[j]);
 	}
@@ -58,25 +58,23 @@ public class BipartiteGraph
 	{
 		var forks = new Stack<Vertex>();
 		forks.Push(source);
-		Vertex fork;
-		List<Vertex> path = new List<Vertex>();
+        var path = new List<Vertex>();
 
 		while (forks.Count > 0)
 		{
-			fork = forks.Pop();
-			if (!fork.Visited)
-			{
-				fork.Visited = true;
-				path.Add(fork);
+			var fork = forks.Pop();
+            if (fork.Visited) continue;
+            fork.Visited = true;
+            path.Add(fork);
 
-				if (fork == targetVertex)
-					break;
+            if (fork == targetVertex) break;
 
-				foreach (var vertex in fork.AdjacentVertices)
-					if (!vertex.Visited)
-						forks.Push(vertex);
-			}
-		}
+            fork.AdjacentVertices.ForEach(vertex =>
+            {
+                if (vertex.Visited) return;
+                forks.Push(vertex);
+            });
+        }
 
 		foreach (var vertex in path)
 			vertex.Visited = false;
@@ -97,17 +95,10 @@ public class BipartiteGraph
 			_adjacencyMatrix = value;
 		}
 	}
-	public Vertex[] LeftVertices
-	{
-		get => (Vertex[])_leftVertices.Clone();
-		private set => _leftVertices = value;
-	}
-	public Vertex[] RightVertices
-	{
-		get => (Vertex[])_rightVertices.Clone();
-		private set => _rightVertices = value;
-	}
-	public Vertex Source { get; private set; }
+
+    public Vertex[] LeftVertices => (Vertex[])_leftVertices.Clone();
+	public Vertex[] RightVertices => (Vertex[])_rightVertices.Clone();
+    public Vertex Source { get; private set; }
 	public Vertex Drain { get; private set; }
 	
 	private bool[,] _adjacencyMatrix;

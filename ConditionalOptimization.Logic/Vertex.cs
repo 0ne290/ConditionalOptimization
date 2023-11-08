@@ -10,11 +10,11 @@ public class Vertex
 		Visited = false;
 	}
 
-	public void AddAnUndirectedEdge(Vertex vertex)
-	{
-		AddStraightEdge(vertex);
-		AddBackEdge(vertex);
-	}
+	//public void AddAnUndirectedEdge(Vertex vertex)
+	//{
+	//	AddStraightEdge(vertex);
+	//	AddBackEdge(vertex);
+	//}
 	public void AddBackEdge(Vertex vertex)
 	{
 		vertex.AddStraightEdge(this);
@@ -32,21 +32,16 @@ public class Vertex
 		AddBackEdge(adjacentVertex);
 	}
 	public void DeleteEdge(Vertex adjacentVertex)
-	{
-		if (!_adjacentVertices.Remove(adjacentVertex))
-			Console.WriteLine("Suuupir");
-			//throw new Exception("The specified vertex is not adjacent to the this vertex");
-	}
+    {
+        if (_adjacentVertices.Remove(adjacentVertex)) return;
+        Console.WriteLine("Suuupir");
+    }
 	
-	public int Id { get; private set; }
-	public List<Vertex> AdjacentVertices
-	{
-		get => new List<Vertex>(_adjacentVertices);
-		private set => _adjacentVertices = value;
-	}
-	public bool Visited { get; set; }
+	public int Id { get; }
+	public List<Vertex> AdjacentVertices => new(_adjacentVertices);
+    public bool Visited { get; set; }
 
-	private List<Vertex> _adjacentVertices;
+	private readonly List<Vertex> _adjacentVertices;
 	
 	private static int _counter = 1;
 }
