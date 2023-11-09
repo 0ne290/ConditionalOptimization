@@ -6,9 +6,11 @@ public class BipartiteGraph
     {
         AdjacencyMatrix = adjacencyMatrix;
         var length = AdjacencyMatrix.GetLength(0);
+        
         _leftVertices = new Vertex[length];
 		_rightVertices = new Vertex[length];
-		Source = new Vertex();
+		
+        Source = new Vertex();
 		Drain = new Vertex();
 		
 		for (var i = 0; i < length; i++)
