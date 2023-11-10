@@ -4,35 +4,34 @@ public class BipartiteGraph
 {
 	public BipartiteGraph(bool[,] adjacencyMatrix)
 	{
-		AdjacencyMatrix = adjacencyMatrix;
-		ReconstructGraph();
-	}
-	
-	public void ReconstructGraph()
-	{
-		_leftVertices = new Vertex[AdjacencyMatrix.GetLength(0)];
-		_rightVertices = new Vertex[AdjacencyMatrix.GetLength(0)];
+		if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
+			throw new Exception("The incidence matrix must be square");
+		_adjacencyMatrix = adjacencyMatrix;
+		NumberOfVertices = 2 * _adjacencyMatrix.GetLength(0) + 2;
+		
+		_leftVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
+		_rightVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
 		Source = new Vertex();
 		Drain = new Vertex();
-		
-		for (int i = 0; i < AdjacencyMatrix.GetLength(0); i++)
+        
+		for (int i = 0; i < _adjacencyMatrix.GetLength(0); i++)
 		{
 			_leftVertices[i] = new Vertex();
 			Source.AddStraightEdge(_leftVertices[i]);
 			_rightVertices[i] = new Vertex();
 			_rightVertices[i].AddStraightEdge(Drain);
 		}
-		
-		for (int i = 0; i < AdjacencyMatrix.GetLength(0); i++)
-			for (int j = 0; j < AdjacencyMatrix.GetLength(0); j++)
-				if (AdjacencyMatrix[i, j])
+        
+		for (int i = 0; i < _adjacencyMatrix.GetLength(0); i++)
+			for (int j = 0; j < _adjacencyMatrix.GetLength(0); j++)
+				if (_adjacencyMatrix[i, j])
 					_leftVertices[i].AddStraightEdge(_rightVertices[j]);
 	}
 	
 	public List<Vertex> FordFulkersonAlgorithm()
 	{
 		var copyOfGraph = new BipartiteGraph(AdjacencyMatrix);
-		var path = DepthFirstSearch(copyOfGraph.Source, copyOfGraph.Drain);
+		var path = DepthFirstSearch(1, 2);
 		var maximumMatching = path;
 
 		while (path.Count > 0)
@@ -47,15 +46,17 @@ public class BipartiteGraph
 			for (int i = 0; i < path.Count - 1; i++)
 				path[i].InvertEdge(path[i + 1]);
 
-			path = DepthFirstSearch(copyOfGraph.Source, copyOfGraph.Drain);
+			path = DepthFirstSearch(1, 2);
 		}
 
 		return maximumMatching;
 	}
-	public List<Vertex> DepthFirstSearch(Vertex source, Vertex targetVertex)
+	public List<Vertex> DepthFirstSearch(int startingVertexId, int endVertexId)
 	{
+		var startingVertex = FindAVertexById(startingVertexId);
+		var endVertex = FindAVertexById(endVertexId);
 		var forks = new Stack<Vertex>();
-		forks.Push(source);
+		forks.Push(startingVertex);
 		Vertex fork;
 		List<Vertex> path = new List<Vertex>();
 
@@ -67,46 +68,44 @@ public class BipartiteGraph
 				fork.Visited = true;
 				path.Add(fork);
 
-				if (fork == targetVertex)
+				if (fork == endVertex)
 					break;
-
-				foreach (var vertex in fork.AdjacentVertices)
+				
+				fork.AdjacentVertices.ForEach(vertex =>
+				{
 					if (!vertex.Visited)
 						forks.Push(vertex);
+				});
 			}
 		}
 
-		foreach (var vertex in path)
-			vertex.Visited = false;
+		path.ForEach(vertex => vertex.Visited = false);
 			
-		path.Remove(source);
-		path.Remove(targetVertex);
+		path.Remove(startingVertex);
+		path.Remove(endVertex);
 
 		return path;
 	}
+	private Vertex FindAVertexById(int id)
+	{
+		if (id > NumberOfVertices || id < 1)
+			throw new Exception("Vertex with the specified id is not contained in the graph");
+
+		if (id == 1)
+			return Source;
+		if (id == 2)
+			return Drain;
+		if (id % 2 == 1)
+			return _leftVertices[id % _leftVertices.Length];
+		return _rightVertices[id % _rightVertices.Length];
+	}
 	
-	public bool[,] AdjacencyMatrix
-	{
-		get => (bool[,])_adjacencyMatrix.Clone();
-		set
-		{
-			if (value.GetLength(0) != value.GetLength(1))
-				throw new Exception("The incidence matrix must be square");
-			_adjacencyMatrix = value;
-		}
-	}
-	public Vertex[] LeftVertices
-	{
-		get => (Vertex[])_leftVertices.Clone();
-		private set => _leftVertices = value;
-	}
-	public Vertex[] RightVertices
-	{
-		get => (Vertex[])_rightVertices.Clone();
-		private set => _rightVertices = value;
-	}
-	public Vertex Source { get; private set; }
-	public Vertex Drain { get; private set; }
+	public bool[,] AdjacencyMatrix => (bool[,])_adjacencyMatrix.Clone();
+	public Vertex[] LeftVertices => (Vertex[])_leftVertices.Clone();
+	public Vertex[] RightVertices => (Vertex[])_rightVertices.Clone();
+	public Vertex Source { get; }
+	public Vertex Drain { get; }
+	public int NumberOfVertices { get; }
 	
 	private bool[,] _adjacencyMatrix;
 	private Vertex[] _leftVertices, _rightVertices;

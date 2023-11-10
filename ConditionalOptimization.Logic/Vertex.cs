@@ -31,17 +31,14 @@ public class Vertex
 		DeleteEdge(adjacentVertex);
 		AddBackEdge(adjacentVertex);
 	}
-	public bool DeleteEdge(Vertex adjacentVertex) = > _adjacentVertices.Remove(adjacentVertex);
+	public bool DeleteEdge(Vertex adjacentVertex) => _adjacentVertices.Remove(adjacentVertex);
 	
-	public int Id { get; private set; }
-	public List<Vertex> AdjacentVertices
-	{
-		get => new List<Vertex>(_adjacentVertices);
-		private set => _adjacentVertices = value;
-	}
+	public int Id { get; }
+	public List<Vertex> AdjacentVertices => new(_adjacentVertices);
+	
 	public bool Visited { get; set; }
 
-	private List<Vertex> _adjacentVertices;
+	private readonly List<Vertex> _adjacentVertices;
 	
 	private static int _counter = 1;
 }
