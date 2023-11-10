@@ -31,12 +31,7 @@ public class Vertex
 		DeleteEdge(adjacentVertex);
 		AddBackEdge(adjacentVertex);
 	}
-	public void DeleteEdge(Vertex adjacentVertex)
-	{
-		if (!_adjacentVertices.Remove(adjacentVertex))
-			Console.WriteLine("Suuupir");
-			//throw new Exception("The specified vertex is not adjacent to the this vertex");
-	}
+	public bool DeleteEdge(Vertex adjacentVertex) = > _adjacentVertices.Remove(adjacentVertex);
 	
 	public int Id { get; private set; }
 	public List<Vertex> AdjacentVertices
