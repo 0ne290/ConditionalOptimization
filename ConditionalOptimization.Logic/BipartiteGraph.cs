@@ -38,10 +38,8 @@ public class BipartiteGraph
 		{
 			maximumMatching = path;
 			
-			foreach (var leftVertex in path.Intersect(copyOfGraph.LeftVertices))
-				copyOfGraph.Source.DeleteEdge(leftVertex);
-			foreach (var rightVertex in path.Intersect(copyOfGraph.RightVertices))
-				rightVertex.DeleteEdge(copyOfGraph.Drain);
+			path.Intersect(copyOfGraph.LeftVertices).ToList().ForEach(leftVertex => copyOfGraph.Source.DeleteEdge(leftVertex));
+			path.Intersect(copyOfGraph.RightVertices).ToList().ForEach(rightVertex => rightVertex.DeleteEdge(copyOfGraph.Drain));
 			
 			for (int i = 0; i < path.Count - 1; i++)
 				path[i].InvertEdge(path[i + 1]);
