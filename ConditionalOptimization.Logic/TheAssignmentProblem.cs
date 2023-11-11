@@ -1,14 +1,16 @@
-public class TheAssignmentProblema
-{
-  public TheAssignmentProblem(double[] assignmentTable)
-  {
-    AssignmentTable = assignmentTable;
-  }
-  
-  public void HungarianAlgorithm()
-  {
-    
-  }
+namespace ConditionalOptimization.Logic;
 
-  public double[] AssignmentTable { get; set; }
+public class TheAssignmentProblem
+{
+    public TheAssignmentProblem(double[] assignmentTable)
+    {
+        AssignmentTable = assignmentTable;
+    }
+
+    public void HungarianAlgorithm()
+    {
+        
+    }
+    
+    public double[] AssignmentTable { get; set; }
 }

@@ -7,7 +7,6 @@ public class BipartiteGraph
 		if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
 			throw new Exception("The incidence matrix must be square");
 		_adjacencyMatrix = adjacencyMatrix;
-		NumberOfVertices = 2 * _adjacencyMatrix.GetLength(0) + 2;
 		
 		_leftVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
 		_rightVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
@@ -31,7 +30,7 @@ public class BipartiteGraph
 	public List<Vertex> FordFulkersonAlgorithm()
 	{
 		var copyOfGraph = new BipartiteGraph(AdjacencyMatrix);
-		var path = DepthFirstSearch(1, 2);
+		var path = DepthFirstSearch(Source, Drain);
 		var maximumMatching = path;
 
 		while (path.Count > 0)
@@ -44,15 +43,16 @@ public class BipartiteGraph
 			for (int i = 0; i < path.Count - 1; i++)
 				path[i].InvertEdge(path[i + 1]);
 
-			path = DepthFirstSearch(1, 2);
+			path = DepthFirstSearch(Source, Drain);
 		}
 
 		return maximumMatching;
 	}
-	public List<Vertex> DepthFirstSearch(int startingVertexId, int endVertexId)
+	public List<Vertex> DepthFirstSearch(Vertex startingVertex, Vertex endVertex)
 	{
-		var startingVertex = FindAVertexById(startingVertexId);
-		var endVertex = FindAVertexById(endVertexId);
+		if (startingVertex == endVertex || !ValidateVertex(startingVertex) || !ValidateVertex(endVertex))
+			throw new Exception("Vertices must be part of the graph and must not be equal");
+		
 		var forks = new Stack<Vertex>();
 		forks.Push(startingVertex);
 		Vertex fork;
@@ -84,18 +84,11 @@ public class BipartiteGraph
 
 		return path;
 	}
-	private Vertex FindAVertexById(int id)
+	private bool ValidateVertex(Vertex vertex)
 	{
-		if (id > NumberOfVertices || id < 1)
-			throw new Exception("Vertex with the specified id is not contained in the graph");
-
-		if (id == 1)
-			return Source;
-		if (id == 2)
-			return Drain;
-		if (id % 2 == 1)
-			return _leftVertices[id % _leftVertices.Length];
-		return _rightVertices[id % _rightVertices.Length];
+		if (vertex == Source || vertex == Drain || _leftVertices.Contains(vertex) || _rightVertices.Contains(vertex))
+			return true;
+		return false;
 	}
 	
 	public bool[,] AdjacencyMatrix => (bool[,])_adjacencyMatrix.Clone();
@@ -103,7 +96,6 @@ public class BipartiteGraph
 	public Vertex[] RightVertices => (Vertex[])_rightVertices.Clone();
 	public Vertex Source { get; }
 	public Vertex Drain { get; }
-	public int NumberOfVertices { get; }
 	
 	private bool[,] _adjacencyMatrix;
 	private Vertex[] _leftVertices, _rightVertices;

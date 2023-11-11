@@ -6,7 +6,7 @@ class Program
 {
     static void Main()
     {
-		var adjacencyMatrix = new bool[4, 4]
+		var adjacencyMatrix = new[,]
 		{
 			{ true, true, true, true },
 			{ false, true, true, true },
