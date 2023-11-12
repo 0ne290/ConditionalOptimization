@@ -84,12 +84,8 @@ public class BipartiteGraph
 
 		return path;
 	}
-	private bool ValidateVertex(Vertex vertex)
-	{
-		if (vertex == Source || vertex == Drain || _leftVertices.Contains(vertex) || _rightVertices.Contains(vertex))
-			return true;
-		return false;
-	}
+	private bool ValidateVertex(Vertex vertex) =>
+		vertex == Source || vertex == Drain || _leftVertices.Contains(vertex) || _rightVertices.Contains(vertex);
 	
 	public bool[,] AdjacencyMatrix => (bool[,])_adjacencyMatrix.Clone();
 	public Vertex[] LeftVertices => (Vertex[])_leftVertices.Clone();

@@ -2,15 +2,11 @@ namespace ConditionalOptimization.Logic;
 
 public class TheAssignmentProblem
 {
-    public TheAssignmentProblem(double[] assignmentTable)
-    {
-        AssignmentTable = assignmentTable;
-    }
-
-    public void HungarianAlgorithm()
+    public TheAssignmentProblemDto HungarianAlgorithm(double[] costTable)
     {
         
     }
     
-    public double[] AssignmentTable { get; set; }
+    private static readonly Lazy<TheAssignmentProblem> Lazy = new(() => new TheAssignmentProblem());
+    public static TheAssignmentProblem GetInstance() => Lazy.Value;
 }
