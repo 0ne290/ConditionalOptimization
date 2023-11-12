@@ -10,11 +10,15 @@ public class Vertex
 		Visited = false;
 	}
 
-    public void AddBackEdge(Vertex vertex)
+	public void AddAnUndirectedEdge(Vertex vertex)
+	{
+		AddStraightEdge(vertex);
+		AddBackEdge(vertex);
+	}
+	public void AddBackEdge(Vertex vertex)
 	{
 		vertex.AddStraightEdge(this);
 	}
-
 	public void AddStraightEdge(Vertex vertex)
 	{
 		if (_adjacentVertices.Contains(vertex))
@@ -27,15 +31,12 @@ public class Vertex
 		DeleteEdge(adjacentVertex);
 		AddBackEdge(adjacentVertex);
 	}
-	public void DeleteEdge(Vertex adjacentVertex)
-    {
-        if (_adjacentVertices.Remove(adjacentVertex)) return;
-        Console.WriteLine("Suuupir");
-    }
+	public bool DeleteEdge(Vertex adjacentVertex) => _adjacentVertices.Remove(adjacentVertex);
 	
 	public int Id { get; }
 	public List<Vertex> AdjacentVertices => new(_adjacentVertices);
-    public bool Visited { get; set; }
+	
+	public bool Visited { get; set; }
 
 	private readonly List<Vertex> _adjacentVertices;
 	
