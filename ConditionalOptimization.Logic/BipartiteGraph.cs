@@ -6,7 +6,7 @@ public class BipartiteGraph
 	{
 		if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
 			throw new Exception("The incidence matrix must be square");
-		_adjacencyMatrix = adjacencyMatrix;
+		_adjacencyMatrix = (bool[,])adjacencyMatrix.Clone();
 		
 		_leftVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
 		_rightVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
