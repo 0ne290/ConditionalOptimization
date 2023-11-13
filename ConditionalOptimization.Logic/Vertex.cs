@@ -32,6 +32,8 @@ public class Vertex
 		AddBackEdge(adjacentVertex);
 	}
 	public bool DeleteEdge(Vertex adjacentVertex) => _adjacentVertices.Remove(adjacentVertex);
+
+	public void RemoveEdges() => _adjacentVertices.Clear();
 	
 	public int Id { get; }
 	public List<Vertex> AdjacentVertices => new(_adjacentVertices);
