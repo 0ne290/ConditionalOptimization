@@ -40,9 +40,11 @@ public class BipartiteGraph
 
 	public List<Vertex> SearchMinimumVertexCoverOfAGraph(List<Vertex> maximumMatching)
 	{
-		if (ValidateVertices(maximumMatching))
+		if (!ValidateVertices(maximumMatching))
 			throw new Exception("Vertices must be part of the graph and must not be equal");
 		List<Vertex> minimumVertexCover = new List<Vertex>();
+
+		RestoreEdges();
 
 		return minimumVertexCover;
 	}
@@ -50,6 +52,8 @@ public class BipartiteGraph
 	{
 		var maximumMatching = FordFulkersonAlgorithm();
 		List<Vertex> minimumVertexCover = new List<Vertex>();
+
+		RestoreEdges();
 
 		return minimumVertexCover;
 	}
@@ -71,7 +75,6 @@ public class BipartiteGraph
 	
 	public List<Vertex> FordFulkersonAlgorithm()
 	{
-		var copyOfGraph = new BipartiteGraph(AdjacencyMatrix);
 		var path = DepthFirstSearch(Source, Drain);
 		var maximumMatching = path;
 
@@ -79,8 +82,8 @@ public class BipartiteGraph
 		{
 			maximumMatching = path;
 			
-			path.Intersect(copyOfGraph.LeftVertices).ToList().ForEach(leftVertex => copyOfGraph.Source.DeleteEdge(leftVertex));
-			path.Intersect(copyOfGraph.RightVertices).ToList().ForEach(rightVertex => rightVertex.DeleteEdge(copyOfGraph.Drain));
+			path.Intersect(_leftVertices).ToList().ForEach(leftVertex => Source.DeleteEdge(leftVertex));
+			path.Intersect(_rightVertices).ToList().ForEach(rightVertex => rightVertex.DeleteEdge(Drain));
 			
 			for (int i = 0; i < path.Count - 1; i++)
 				path[i].InvertEdge(path[i + 1]);
@@ -88,8 +91,20 @@ public class BipartiteGraph
 			path = DepthFirstSearch(Source, Drain);
 		}
 
+		RestoreEdges();
+
 		return maximumMatching;
 	}
+	private void RestoreEdges()
+	{
+		Source.RemoveEdges();
+		_leftVertices.ForEach(vertex => vertex.RemoveEdges);
+		_rightVertices.ForEach(vertex => vertex.RemoveEdges);
+		Drain.RemoveEdges();
+
+		ConnectVertuces();
+	}
+	
 	public List<Vertex> DepthFirstSearch(Vertex startingVertex, Vertex endVertex)
 	{
 		if (startingVertex == endVertex || !ValidateVertex(startingVertex) || !ValidateVertex(endVertex))
