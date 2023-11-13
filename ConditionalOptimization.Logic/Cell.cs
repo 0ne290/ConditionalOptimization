@@ -4,11 +4,11 @@ public class Cell<T> : IComparable<Cell<T>> where T : IComparable<T>
 {
     public Cell(T value) => Value = value;
     
-    public int CompareTo(Cell<T>? cell)// уберешь знак вопроса - предупреждения появятся
+    public int CompareTo(Cell<T>? cell)
     {
-        //if (cell is null) раскоментишь - предупреждение пропадет
-        //   throw new Exception("The collection cannot contain null cells");
-        return Value.CompareTo(cell.Value);// это все из-за этого ебучего метода - эта падла принимает Nullable
+        if (cell == null)
+            throw new ArgumentNullException(nameof(cell));
+        return Value.CompareTo(cell.Value);
     }
     
     public T Value { get; set; }

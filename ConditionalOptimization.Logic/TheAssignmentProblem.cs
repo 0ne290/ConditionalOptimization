@@ -2,7 +2,7 @@ namespace ConditionalOptimization.Logic;
 
 public class TheAssignmentProblem
 {
-    public TheAssignmentProblem(double[,] costTable) => CostTable = costTable;// Еще кста тут хуй пойми че за предупреждение
+    public TheAssignmentProblem(double[,] costTable) => CostTable = costTable;
     
     public TheAssignmentProblemDto HungarianAlgorithm()
     {
@@ -10,16 +10,32 @@ public class TheAssignmentProblem
         result.CostTable = CostTable;
         var costTable = new Table<double>(_costTable);
         
-        foreach (var row in costTable.Rows)
+        SubTheMinimumCellFromARow(costTable);
+        SubTheMinimumCellFromAColumn(costTable);
+        
+        return result;
+    }
+    private void SubTheMinimumCellFromARow(Table<double> table)
+    {
+        foreach (var row in table.Rows)
         {
             var rowMinimumCell = row.Min();
-            //if (rowMinimumCell is null) раскоментишь эту тупизну - предупреждение исчезнет
-            //    throw new Exception("Row cannot be null or consist only of null cells");
+            if (rowMinimumCell == null)
+                throw new ArgumentNullException(nameof(rowMinimumCell));
             foreach (var cell in row)
                 cell.Value -= rowMinimumCell.Value;
         }
-
-        return result;
+    }
+    private void SubTheMinimumCellFromAColumn(Table<double> table)
+    {
+        foreach (var column in table.Columns)
+        {
+            var columnMinimumCell = column.Min();
+            if (columnMinimumCell == null)
+                throw new ArgumentNullException(nameof(columnMinimumCell));
+            foreach (var cell in column)
+                cell.Value -= columnMinimumCell.Value;
+        }
     }
 
     public double[,] CostTable
@@ -33,5 +49,5 @@ public class TheAssignmentProblem
         }
     }
 
-    private double[,] _costTable;
+    private double[,] _costTable = new double[0,0];
 }

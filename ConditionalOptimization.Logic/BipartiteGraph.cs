@@ -7,12 +7,21 @@ public class BipartiteGraph
 		if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
 			throw new Exception("The incidence matrix must be square");
 		_adjacencyMatrix = (bool[,])adjacencyMatrix.Clone();
-		
+
 		_leftVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
-		_rightVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
-		Source = new Vertex();
-		Drain = new Vertex();
+        _rightVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
+        Source = new Vertex();
+        Drain = new Vertex();
         
+        CreateGraph();
+	}
+	private void CreateGraph()
+	{
+		CreateVertices();
+		ConnectVertices();
+	}
+	private void CreateVertices()
+	{
 		for (int i = 0; i < _adjacencyMatrix.GetLength(0); i++)
 		{
 			_leftVertices[i] = new Vertex();
@@ -20,11 +29,44 @@ public class BipartiteGraph
 			_rightVertices[i] = new Vertex();
 			_rightVertices[i].AddStraightEdge(Drain);
 		}
-        
+	}
+	private void ConnectVertices()
+	{
 		for (int i = 0; i < _adjacencyMatrix.GetLength(0); i++)
 			for (int j = 0; j < _adjacencyMatrix.GetLength(0); j++)
 				if (_adjacencyMatrix[i, j])
 					_leftVertices[i].AddStraightEdge(_rightVertices[j]);
+	}
+
+	public List<Vertex> SearchMinimumVertexCoverOfAGraph(List<Vertex> maximumMatching)
+	{
+		if (ValidateVertices(maximumMatching))
+			throw new Exception("Vertices must be part of the graph and must not be equal");
+		List<Vertex> minimumVertexCover = new List<Vertex>();
+
+		return minimumVertexCover;
+	}
+	public List<Vertex> SearchMinimumVertexCoverOfAGraph()
+	{
+		var maximumMatching = FordFulkersonAlgorithm();
+		List<Vertex> minimumVertexCover = new List<Vertex>();
+
+		return minimumVertexCover;
+	}
+	private bool ValidateVertices(List<Vertex> vertices)
+	{
+		var duplicates = vertices.GroupBy(v => v)
+			.Where(g => g.Count() > 1)
+			.Select(x => x.Key);
+		
+		if (duplicates.Any())
+			return false;
+		
+		foreach (var vertex in vertices)
+			if (vertex != Source && vertex != Drain && !_leftVertices.Contains(vertex) && !_rightVertices.Contains(vertex))
+				return false;
+		
+		return true;
 	}
 	
 	public List<Vertex> FordFulkersonAlgorithm()
