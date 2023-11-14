@@ -111,8 +111,8 @@ public class BipartiteGraph
 			
 			for (int i = 0; i < path.Count - 1; i++)
 			{
-				if (!path[i].EdgeIsInverted(path[i + 1]))
-					path[i].InvertEdge(path[i + 1]);
+				//if (!path[i].EdgeIsInverted(path[i + 1]))
+				path[i].InvertEdge(path[i + 1]);
 			}
 
 			path = DepthFirstSearch(Source, Drain);
