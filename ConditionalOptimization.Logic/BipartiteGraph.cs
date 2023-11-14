@@ -38,20 +38,44 @@ public class BipartiteGraph
 					_leftVertices[i].AddStraightEdge(_rightVertices[j]);
 	}
 
-	public List<Vertex> SearchMinimumVertexCoverOfAGraph(List<Vertex> maximumMatching)
+	public List<Vertex> SearchMinimumVertexCoverOfAGraph(List<Vertex> greatestMatching)
 	{
-		if (!ValidateVertices(maximumMatching))
+		if (!ValidateVertices(greatestMatching))
 			throw new Exception("Vertices must be part of the graph and must not be equal");
-		List<Vertex> minimumVertexCover = new List<Vertex>();
+		List<Vertex> minimumVertexCover = new List<Vertex>(20);
+		
+		for (int i = 0; i < greatestMatching.Count - 1; i++)
+			greatestMatching[i].InvertEdge(greatestMatching[i + 1]);
 
+		var leftVerticesExceptGreatestMatching = _leftVertices.Except(greatestMatching);
+		foreach (var vertex in leftVerticesExceptGreatestMatching)
+			minimumVertexCover.AddRange(DepthFirstSearch(vertex));
+
+		minimumVertexCover = minimumVertexCover.Distinct().ToList();
+		var unvisitedLeftVertices = _leftVertices.Except(minimumVertexCover.Intersect(_leftVertices));
+		minimumVertexCover.RemoveAll(vertex => _leftVertices.Contains(vertex));
+		minimumVertexCover.AddRange(unvisitedLeftVertices);
+		
 		RestoreEdges();
 
 		return minimumVertexCover;
 	}
 	public List<Vertex> SearchMinimumVertexCoverOfAGraph()
 	{
-		var maximumMatching = FordFulkersonAlgorithm();
-		List<Vertex> minimumVertexCover = new List<Vertex>();
+		var greatestMatching = FordFulkersonAlgorithm();
+		List<Vertex> minimumVertexCover = new List<Vertex>(20);
+		
+		for (int i = 0; i < greatestMatching.Count - 1; i++)
+			greatestMatching[i].InvertEdge(greatestMatching[i + 1]);
+
+		var leftVerticesExceptGreatestMatching = _leftVertices.Except(greatestMatching);
+		foreach (var vertex in leftVerticesExceptGreatestMatching)
+			minimumVertexCover.AddRange(DepthFirstSearch(vertex));
+
+		minimumVertexCover = minimumVertexCover.Distinct().ToList();
+		var unvisitedLeftVertices = _leftVertices.Except(minimumVertexCover.Intersect(_leftVertices));
+		minimumVertexCover.RemoveAll(vertex => _leftVertices.Contains(vertex));
+		minimumVertexCover.AddRange(unvisitedLeftVertices);
 
 		RestoreEdges();
 
@@ -76,11 +100,11 @@ public class BipartiteGraph
 	public List<Vertex> FordFulkersonAlgorithm()
 	{
 		var path = DepthFirstSearch(Source, Drain);
-		var maximumMatching = path;
+		var greatestMatching = path;
 
 		while (path.Count > 0)
 		{
-			maximumMatching = path;
+			greatestMatching = path;
 			
 			path.Intersect(_leftVertices).ToList().ForEach(leftVertex => Source.DeleteEdge(leftVertex));
 			path.Intersect(_rightVertices).ToList().ForEach(rightVertex => rightVertex.DeleteEdge(Drain));
@@ -93,18 +117,50 @@ public class BipartiteGraph
 
 		RestoreEdges();
 
-		return maximumMatching;
+		return greatestMatching;
 	}
 	private void RestoreEdges()
 	{
 		Source.RemoveEdges();
-		_leftVertices.ForEach(vertex => vertex.RemoveEdges);
-		_rightVertices.ForEach(vertex => vertex.RemoveEdges);
+		Array.ForEach(_leftVertices, vertex => vertex.RemoveEdges());
+		Array.ForEach(_rightVertices, vertex => vertex.RemoveEdges());
 		Drain.RemoveEdges();
 
-		ConnectVertuces();
+		ConnectVertices();
 	}
 	
+	public List<Vertex> DepthFirstSearch(Vertex startingVertex)
+	{
+		if (!ValidateVertex(startingVertex))
+			throw new Exception("Vertex must be part of the graph");
+		
+		var forks = new Stack<Vertex>();
+		forks.Push(startingVertex);
+		Vertex fork;
+		List<Vertex> path = new List<Vertex>(20);
+
+		while (forks.Count > 0)
+		{
+			fork = forks.Pop();
+			if (!fork.Visited)
+			{
+				fork.Visited = true;
+				path.Add(fork);
+				
+				fork.AdjacentVertices.ForEach(vertex =>
+				{
+					if (!vertex.Visited)
+						forks.Push(vertex);
+				});
+			}
+		}
+
+		path.ForEach(vertex => vertex.Visited = false);
+			
+		path.Remove(startingVertex);
+
+		return path;
+	}
 	public List<Vertex> DepthFirstSearch(Vertex startingVertex, Vertex endVertex)
 	{
 		if (startingVertex == endVertex || !ValidateVertex(startingVertex) || !ValidateVertex(endVertex))
@@ -113,7 +169,7 @@ public class BipartiteGraph
 		var forks = new Stack<Vertex>();
 		forks.Push(startingVertex);
 		Vertex fork;
-		List<Vertex> path = new List<Vertex>();
+		List<Vertex> path = new List<Vertex>(20);
 
 		while (forks.Count > 0)
 		{

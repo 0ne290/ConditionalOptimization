@@ -6,7 +6,7 @@ public class Vertex
 	{
 		Id = _counter;
 		_counter++;
-		_adjacentVertices = new List<Vertex>();
+		_adjacentVertices = new List<Vertex>(10);
 		Visited = false;
 	}
 
