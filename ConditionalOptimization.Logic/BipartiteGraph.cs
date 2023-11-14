@@ -110,7 +110,10 @@ public class BipartiteGraph
 			path.Intersect(_rightVertices).ToList().ForEach(rightVertex => rightVertex.DeleteEdge(Drain));
 			
 			for (int i = 0; i < path.Count - 1; i++)
-				path[i].InvertEdge(path[i + 1]);
+			{
+				if (!path[i].EdgeIsInverted(path[i + 1]))
+					path[i].InvertEdge(path[i + 1]);
+			}
 
 			path = DepthFirstSearch(Source, Drain);
 		}
@@ -190,7 +193,8 @@ public class BipartiteGraph
 			}
 		}
 
-		path.ForEach(vertex => vertex.Visited = false);
+		path.ForEach(vertex => { vertex.Visited = false; Console.Write($"{vertex.Id} --> "); });
+		Console.WriteLine();
 			
 		path.Remove(startingVertex);
 		path.Remove(endVertex);
