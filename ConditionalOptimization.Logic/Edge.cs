@@ -10,19 +10,19 @@ public class Edge
         _flow = 0;
     }
     
-    public void ConnectVertices()
+    public void ConnectVertices() => Start.AddEdge(this);
+    public void Delete() => Start.DeleteEdge(this);
+    public void Invert()
     {
-        Start.AddOutgoingEdge(this);
-        End.AddIncomingEdge(this);
-    }
-    public void DeleteEdge()
-    {
-        Start.DeleteOutgoingEdge(this);
-        End.DeleteIncomingEdge(this);
+        Start.DeleteEdge(this);
+        End.AddEdge(this);
+        var temp = Start;
+        Start = End;
+        End = temp;
     }
     
-    public Vertex Start { get; }
-    public Vertex End { get; }
+    public Vertex Start { get; private set; }
+    public Vertex End { get; private set; }
     public int Capacity
     {
         get => _capacity;
