@@ -34,8 +34,8 @@ class Program
 
         var bipartiteGraph = new BipartiteGraph(adjacencyMatrix);
         
-        var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
-        //var greatestMatching = bipartiteGraph.DepthFirstSearch(bipartiteGraph.Source, bipartiteGraph.Drain);
+        //var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
+        var greatestMatching = bipartiteGraph.DepthFirstSearch(bipartiteGraph.Source, bipartiteGraph.Drain);
         //var greatestMatching = bipartiteGraph.SearchMinimumVertexCoverOfAGraph();
         Console.WriteLine();
         Console.WriteLine();

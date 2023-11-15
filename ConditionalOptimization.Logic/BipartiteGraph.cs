@@ -18,27 +18,40 @@ public class BipartiteGraph
 	private void CreateGraph()
 	{
 		CreateVertices();
-		ConnectVertices();
+		CreateEdges();
 	}
 	private void CreateVertices()
 	{
 		for (int i = 0; i < _adjacencyMatrix.GetLength(0); i++)
 		{
 			_leftVertices[i] = new Vertex();
-			Source.AddStraightEdge(_leftVertices[i]);
+			var edge = new Edge(Source, _leftVertices[i]);
+			Source.AddOutgoingEdge(edge);
+			_leftVertices[i].AddIncomingEdge(edge);
+			
 			_rightVertices[i] = new Vertex();
-			_rightVertices[i].AddStraightEdge(Drain);
+			edge = new Edge(_rightVertices[i], Drain);
+			_rightVertices[i].AddOutgoingEdge(edge);
+			Drain.AddIncomingEdge(edge);
 		}
 	}
-	private void ConnectVertices()
+	private void CreateEdges()
 	{
 		for (int i = 0; i < _adjacencyMatrix.GetLength(0); i++)
+		{
 			for (int j = 0; j < _adjacencyMatrix.GetLength(0); j++)
+			{
 				if (_adjacencyMatrix[i, j])
-					_leftVertices[i].AddStraightEdge(_rightVertices[j]);
+				{
+					var edge = new Edge(_leftVertices[i], _rightVertices[j]);
+					_leftVertices[i].AddOutgoingEdge(edge);
+					_rightVertices[j].AddIncomingEdge(edge);
+				}
+			}
+		}
 	}
 
-	public List<Vertex> SearchMinimumVertexCoverOfAGraph(List<Vertex> greatestMatching)
+	/*public List<Vertex> SearchMinimumVertexCoverOfAGraph(List<Vertex> greatestMatching)
 	{
 		if (!ValidateVertices(greatestMatching))
 			throw new Exception("Vertices must be part of the graph and must not be equal");
@@ -130,7 +143,7 @@ public class BipartiteGraph
 		Drain.RemoveEdges();
 
 		ConnectVertices();
-	}
+	}*/
 	
 	public List<Vertex> DepthFirstSearch(Vertex startingVertex)
 	{
@@ -150,8 +163,9 @@ public class BipartiteGraph
 				fork.Visited = true;
 				path.Add(fork);
 				
-				fork.AdjacentVertices.ForEach(vertex =>
+				fork.OutgoingEdges.ForEach(edge =>
 				{
+					var vertex = edge.End;
 					if (!vertex.Visited)
 						forks.Push(vertex);
 				});
@@ -185,16 +199,16 @@ public class BipartiteGraph
 				if (fork == endVertex)
 					break;
 				
-				fork.AdjacentVertices.ForEach(vertex =>
+				fork.OutgoingEdges.ForEach(edge =>
 				{
+					var vertex = edge.End;
 					if (!vertex.Visited)
 						forks.Push(vertex);
 				});
 			}
 		}
 
-		path.ForEach(vertex => { vertex.Visited = false; Console.Write($"{vertex.Id} --> "); });
-		Console.WriteLine();
+		path.ForEach(vertex => vertex.Visited = false);
 			
 		path.Remove(startingVertex);
 		path.Remove(endVertex);

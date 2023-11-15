@@ -5,57 +5,34 @@ public class Vertex
 	public Vertex()
 	{
 		Id = _counter;
-		_counter++;
-		_adjacentVertices = new List<Vertex>(10);
-		//_invertedEdges = new List<Vertex>(10);
 		Visited = false;
+		_outgoingEdges = new List<Edge>(10);
+		_incomingEdges = new List<Edge>(10);
+		_counter++;
 	}
 
-	public void AddAnUndirectedEdge(Vertex vertex)
+	public void AddOutgoingEdge(Edge edge)
 	{
-		AddStraightEdge(vertex);
-		AddBackEdge(vertex);
+		if (_outgoingEdges.Contains(edge))
+			throw new Exception("The specified edge already originates from the vertex");
+		_outgoingEdges.Add(edge);
 	}
-	public void AddBackEdge(Vertex vertex)
+	public void AddIncomingEdge(Edge edge)
 	{
-		vertex.AddStraightEdge(this);
-	}
-	//public void AddInvertedEdge(Vertex vertex)
-	//{
-	//	//if (!vertex.AdjacentVertices.Contains(this))
-	//	//	throw new Exception("Adding an inverted edge is only possible in place of an existing edge");
-	//	vertex.DeleteEdge(this);
-	//	AddBackEdge(vertex);
-	//	_invertedEdges.Add(vertex);
-	//}
-	public void AddStraightEdge(Vertex vertex)
-	{
-		if (_adjacentVertices.Contains(vertex))
-			throw new Exception("The specified vertex is already adjacent to this vertex");
-		_adjacentVertices.Add(vertex);
+		if (_incomingEdges.Contains(edge))
+			throw new Exception("The specified edge is already included in the vertex");
+		_incomingEdges.Add(edge);
 	}
 	
-	public void InvertEdge(Vertex adjacentVertex)
-	{
-		DeleteEdge(adjacentVertex);
-		AddBackEdge(adjacentVertex);
-		//adjacentVertex.AddInvertedEdge(this);
-	}
-	public bool DeleteEdge(Vertex adjacentVertex) => _adjacentVertices.Remove(adjacentVertex);
+	public bool DeleteOutgoingEdge(Edge edge) => _outgoingEdges.Remove(edge);
+	public bool DeleteIncomingEdge(Edge edge) => _incomingEdges.Remove(edge);
 
-	public void RemoveEdges()
-	{
-		//_invertedEdges.Clear();
-		_adjacentVertices.Clear();
-	}
-
-	//public bool EdgeIsInverted(Vertex vertex) => _invertedEdges.Contains(vertex);
-	
+	public List<Edge> OutgoingEdges => new(_outgoingEdges);
+	public List<Edge> IncomingEdges => new(_incomingEdges);
 	public int Id { get; }
-	public List<Vertex> AdjacentVertices => new(_adjacentVertices);
 	public bool Visited { get; set; }
-
-	//private List<Vertex> _invertedEdges;
-	private readonly List<Vertex> _adjacentVertices;
+	
+	private List<Edge> _outgoingEdges;
+	private List<Edge> _incomingEdges;
 	private static int _counter = 1;
 }
