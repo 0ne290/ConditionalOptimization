@@ -34,13 +34,14 @@ class Program
 
         var bipartiteGraph = new BipartiteGraph(adjacencyMatrix);
         
-        //var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
-        var greatestMatching = bipartiteGraph.DepthFirstSearch(bipartiteGraph.Source, bipartiteGraph.Drain);
+        bipartiteGraph.FordFulkersonAlgorithm();
+        var greatestMatching = bipartiteGraph.GetLoadedEdges();
+        //var greatestMatching = bipartiteGraph.DepthFirstSearch(bipartiteGraph.Source, bipartiteGraph.Drain);
         //var greatestMatching = bipartiteGraph.SearchMinimumVertexCoverOfAGraph();
         Console.WriteLine();
         Console.WriteLine();
-        foreach (var vertex in greatestMatching)
-            Console.Write($"{vertex.Id} --> ");
+        foreach (var edge in greatestMatching)
+            Console.Write($"{edge.Start.Id} --> {edge.End.Id}");
 
         Console.WriteLine();
 		Console.Write("Для завершения программы нажмите любую клавишу...");

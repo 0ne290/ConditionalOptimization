@@ -10,6 +10,7 @@ public class BipartiteGraph
 
 		_leftVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
         _rightVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
+        _edges = new List<Edge>(_adjacencyMatrix.GetLength(0) * _adjacencyMatrix.GetLength(0));
         Source = new Vertex();
         Drain = new Vertex();
         
@@ -42,6 +43,7 @@ public class BipartiteGraph
 				if (_adjacencyMatrix[i, j])
 				{
 					var edge = new Edge(_leftVertices[i], _rightVertices[j]);
+					_edges.Add(edge);
 					edge.ConnectVertices();
 				}
 			}
@@ -107,30 +109,64 @@ public class BipartiteGraph
 		return true;
 	}*/
 	
-	public List<Vertex> FordFulkersonAlgorithm()
+	public void FordFulkersonAlgorithm()
 	{
-		var path = DepthFirstSearch(Source, Drain);
-		var greatestMatching = path;
+		var forks = new Stack<Vertex>();
+		forks.Push(Source);
+		var straightEdges = new Stack<Edge>();
+		var backEdges = new Stack<Edge>();
+		Vertex fork;
+		List<Vertex> visitedVertices = new List<Vertex>(20);
 
-		while (path.Count > 0)
+		while (forks.Count > 0)
 		{
-			greatestMatching = path;
+			if (straightEdges.TryPop(out var straightEdge))
+				straightEdge.Flow += 1;
+			else if (backEdges.TryPop(out var backEdge))
+				backEdge.Flow -= 1;
+			fork = forks.Pop();
 			
-			path.Intersect(_leftVertices).ToList().ForEach(leftVertex => Source.DeleteEdge(leftVertex));
-			path.Intersect(_rightVertices).ToList().ForEach(rightVertex => rightVertex.DeleteEdge(Drain));
-			
-			for (int i = 0; i < path.Count - 1; i++)
+			if (fork == Drain)
 			{
-				//if (!path[i].EdgeIsInverted(path[i + 1]))
-				path[i].InvertEdge(path[i + 1]);
+				visitedVertices.ForEach(vertex => vertex.Visited = false);
+				visitedVertices.Clear();
+				forks.Clear();
+				forks.Push(Source);
+				straightEdges.Clear();
+				backEdges.Clear();
 			}
-
-			path = DepthFirstSearch(Source, Drain);
+			
+			if (!fork.Visited)
+			{
+				fork.Visited = true;
+				visitedVertices.Add(fork);
+				
+				fork.OutgoingEdges.ForEach(edge =>
+				{
+					if (edge.Flow < edge.Capacity)
+					{
+						var vertex = edge.End;
+						if (!vertex.Visited)
+						{
+							forks.Push(vertex);
+							straightEdges.Push(edge);
+						}
+					}
+				});
+				fork.IncomingEdges.ForEach(edge =>
+				{
+					if (edge.Flow == edge.Capacity)
+					{
+						var vertex = edge.Start;
+						if (!vertex.Visited)
+						{
+							forks.Push(vertex);
+							backEdges.Push(edge);
+						}
+					}
+				});
+			}
 		}
-
-		RestoreEdges();
-
-		return greatestMatching;
 	}
 	/*private void RestoreEdges()
 	{
@@ -214,13 +250,17 @@ public class BipartiteGraph
 	}
 	private bool ValidateVertex(Vertex vertex) =>
 		vertex == Source || vertex == Drain || _leftVertices.Contains(vertex) || _rightVertices.Contains(vertex);
+
+	public IEnumerable<Edge> GetLoadedEdges() => _edges.Where(e => e.Flow == e.Capacity);
 	
 	public bool[,] AdjacencyMatrix => (bool[,])_adjacencyMatrix.Clone();
+	public List<Edge> Edges => new(_edges);
 	public Vertex[] LeftVertices => (Vertex[])_leftVertices.Clone();
 	public Vertex[] RightVertices => (Vertex[])_rightVertices.Clone();
 	public Vertex Source { get; }
 	public Vertex Drain { get; }
 	
 	private bool[,] _adjacencyMatrix;
+	private List<Edge> _edges;
 	private Vertex[] _leftVertices, _rightVertices;
 }

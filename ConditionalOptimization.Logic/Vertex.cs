@@ -26,11 +26,13 @@ public class Vertex
 	
 	public void DeleteOutgoingEdge(Edge edge)
 	{
-		_outgoingEdges.Remove(edge);
+		if (_outgoingEdges.Remove(edge))
+			throw new Exception("The specified edge does not leave a vertex");
 	}
 	public void DeleteIncomingEdge(Edge edge)
 	{
-		_incomingEdges.Remove(edge);
+		if (_incomingEdges.Remove(edge))
+			throw new Exception("The specified edge of the graph is included in the vertex");
 	}
 
 	public List<Edge> OutgoingEdges => new(_outgoingEdges);
