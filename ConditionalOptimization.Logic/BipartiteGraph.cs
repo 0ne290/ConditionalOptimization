@@ -111,11 +111,17 @@ public class BipartiteGraph
 	
 	public void FordFulkersonAlgorithm()
 	{
-		List<Edge> path;
+		var path = DeepFirstSearch();
 		while (path.Count > 0)
 		{
+			path.ForEach(edge =>
+			{
+				if (edge.Flow == Flow.Capacity)
+					edge.Invert();
+				else
+					edge.Delete();
+			});
 			path = DeepFirstSearch();
-			path.ForEach()
 		}
 	}
 	/*private void RestoreEdges()
@@ -134,17 +140,27 @@ public class BipartiteGraph
 		forks.Push(Source);
 		Vertex fork;
 		var edges = new Stack<Edge>();
-		Edge edge;
+		edges.Push(new Edge(Source, Drain));
+		Edge edge
 		List<Edge> path = new List<Edge>(20);
+		List<Vertex> visitedVertices = new List<Vertex>(20);
 
 		while (forks.Count > 0)
 		{
 			fork = forks.Pop();
-			edge = edges.
+			edge = edges.Pop();
 			if (!fork.Visited)
 			{
+				if (edge.Flow == edge.Capacity)
+					edge.Flow -= 1;
+				else
+					edge.Flow += 1;
+				
 				fork.Visited = true;
-				path.Add(fork);
+
+				visitedVertices.Add(fork);
+				path.Add(edge);
+				
 				
 				if (fork == Drain)
 					break;
@@ -153,16 +169,12 @@ public class BipartiteGraph
 				{
 					var vertex = edge.End;
 					if (!vertex.Visited)
-					{
 						forks.Push(vertex);
-					}
 				});
 			}
 		}
 
-		path.ForEach(vertex => vertex.Visited = false);
-			
-		path.Remove(startingVertex);
+		visitedVertices.ForEach(vertex => vertex.Visited = false);
 
 		return path;
 	}
