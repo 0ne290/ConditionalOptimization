@@ -111,61 +111,11 @@ public class BipartiteGraph
 	
 	public void FordFulkersonAlgorithm()
 	{
-		var forks = new Stack<Vertex>();
-		forks.Push(Source);
-		var straightEdges = new Stack<Edge>();
-		var backEdges = new Stack<Edge>();
-		Vertex fork;
-		List<Vertex> visitedVertices = new List<Vertex>(20);
-
-		while (forks.Count > 0)
+		List<Edge> path;
+		while (path.Count > 0)
 		{
-			if (straightEdges.TryPop(out var straightEdge))
-				straightEdge.Flow += 1;
-			else if (backEdges.TryPop(out var backEdge))
-				backEdge.Flow -= 1;
-			fork = forks.Pop();
-			
-			if (fork == Drain)
-			{
-				visitedVertices.ForEach(vertex => vertex.Visited = false);
-				visitedVertices.Clear();
-				forks.Clear();
-				forks.Push(Source);
-				straightEdges.Clear();
-				backEdges.Clear();
-			}
-			
-			if (!fork.Visited)
-			{
-				fork.Visited = true;
-				visitedVertices.Add(fork);
-				
-				fork.OutgoingEdges.ForEach(edge =>
-				{
-					if (edge.Flow < edge.Capacity)
-					{
-						var vertex = edge.End;
-						if (!vertex.Visited)
-						{
-							forks.Push(vertex);
-							straightEdges.Push(edge);
-						}
-					}
-				});
-				fork.IncomingEdges.ForEach(edge =>
-				{
-					if (edge.Flow == edge.Capacity)
-					{
-						var vertex = edge.Start;
-						if (!vertex.Visited)
-						{
-							forks.Push(vertex);
-							backEdges.Push(edge);
-						}
-					}
-				});
-			}
+			path = DeepFirstSearch();
+			path.ForEach()
 		}
 	}
 	/*private void RestoreEdges()
@@ -178,6 +128,44 @@ public class BipartiteGraph
 		ConnectVertices();
 	}*/
 	
+	public List<Edge> DepthFirstSearch()
+	{
+		var forks = new Stack<Vertex>();
+		forks.Push(Source);
+		Vertex fork;
+		var edges = new Stack<Edge>();
+		Edge edge;
+		List<Edge> path = new List<Edge>(20);
+
+		while (forks.Count > 0)
+		{
+			fork = forks.Pop();
+			edge = edges.
+			if (!fork.Visited)
+			{
+				fork.Visited = true;
+				path.Add(fork);
+				
+				if (fork == Drain)
+					break;
+				
+				fork.Edges.ForEach(edge =>
+				{
+					var vertex = edge.End;
+					if (!vertex.Visited)
+					{
+						forks.Push(vertex);
+					}
+				});
+			}
+		}
+
+		path.ForEach(vertex => vertex.Visited = false);
+			
+		path.Remove(startingVertex);
+
+		return path;
+	}
 	public List<Vertex> DepthFirstSearch(Vertex startingVertex)
 	{
 		if (!ValidateVertex(startingVertex))
