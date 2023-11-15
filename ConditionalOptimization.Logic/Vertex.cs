@@ -24,8 +24,14 @@ public class Vertex
 		_incomingEdges.Add(edge);
 	}
 	
-	public bool DeleteOutgoingEdge(Edge edge) => _outgoingEdges.Remove(edge);
-	public bool DeleteIncomingEdge(Edge edge) => _incomingEdges.Remove(edge);
+	public void DeleteOutgoingEdge(Edge edge)
+	{
+		_outgoingEdges.Remove(edge);
+	}
+	public void DeleteIncomingEdge(Edge edge)
+	{
+		_incomingEdges.Remove(edge);
+	}
 
 	public List<Edge> OutgoingEdges => new(_outgoingEdges);
 	public List<Edge> IncomingEdges => new(_incomingEdges);

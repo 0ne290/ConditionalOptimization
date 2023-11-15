@@ -26,13 +26,11 @@ public class BipartiteGraph
 		{
 			_leftVertices[i] = new Vertex();
 			var edge = new Edge(Source, _leftVertices[i]);
-			Source.AddOutgoingEdge(edge);
-			_leftVertices[i].AddIncomingEdge(edge);
+			edge.ConnectVertices();
 			
 			_rightVertices[i] = new Vertex();
 			edge = new Edge(_rightVertices[i], Drain);
-			_rightVertices[i].AddOutgoingEdge(edge);
-			Drain.AddIncomingEdge(edge);
+			edge.ConnectVertices();
 		}
 	}
 	private void CreateEdges()
@@ -44,8 +42,7 @@ public class BipartiteGraph
 				if (_adjacencyMatrix[i, j])
 				{
 					var edge = new Edge(_leftVertices[i], _rightVertices[j]);
-					_leftVertices[i].AddOutgoingEdge(edge);
-					_rightVertices[j].AddIncomingEdge(edge);
+					edge.ConnectVertices();
 				}
 			}
 		}
@@ -108,7 +105,7 @@ public class BipartiteGraph
 				return false;
 		
 		return true;
-	}
+	}*/
 	
 	public List<Vertex> FordFulkersonAlgorithm()
 	{
@@ -135,7 +132,7 @@ public class BipartiteGraph
 
 		return greatestMatching;
 	}
-	private void RestoreEdges()
+	/*private void RestoreEdges()
 	{
 		Source.RemoveEdges();
 		Array.ForEach(_leftVertices, vertex => vertex.RemoveEdges());
