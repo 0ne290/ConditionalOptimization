@@ -1,266 +1,116 @@
+using ConditionalOptimization.Logic.Contracts;
+
 namespace ConditionalOptimization.Logic;
 
 public class BipartiteGraph
 {
-	public BipartiteGraph(bool[,] adjacencyMatrix)
-	{
-		if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
-			throw new Exception("The incidence matrix must be square");
-		_adjacencyMatrix = (bool[,])adjacencyMatrix.Clone();
-
-		_leftVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
-        _rightVertices = new Vertex[_adjacencyMatrix.GetLength(0)];
-        _edges = new List<Edge>(_adjacencyMatrix.GetLength(0) * _adjacencyMatrix.GetLength(0));
-        Source = new Vertex();
-        Drain = new Vertex();
-        
-        CreateGraph();
-	}
-	private void CreateGraph()
-	{
-		CreateVertices();
-		CreateEdges();
-	}
-	private void CreateVertices()
-	{
-		for (int i = 0; i < _adjacencyMatrix.GetLength(0); i++)
+    public BipartiteGraph(List<List<bool>> adjacencyMatrix)
+    {
+	    
+	    _adjacencyMatrix = new List<List<bool>>(adjacencyMatrix);
+	    _adjacencyMatrix.Insert(0, new List<bool>(NumberOfNodes));
+	    _adjacencyMatrix.Add(new List<bool>(NumberOfNodes));
+		foreach (var nodes in adjacencyMatrix)
 		{
-			_leftVertices[i] = new Vertex();
-			var edge = new Edge(Source, _leftVertices[i]);
-			edge.ConnectVertices();
+			_adjacencyMatrix[0].Add(true);
 			
-			_rightVertices[i] = new Vertex();
-			edge = new Edge(_rightVertices[i], Drain);
-			edge.ConnectVertices();
+			if (nodes.Count != adjacencyMatrix.Count)
+				throw new Exception("The incidence matrix must be square");
+		}
+		_adjacencyMatrix = new List<List<bool>>(adjacencyMatrix);
+		
+		_adjacencyLists = new List<List<int>>(NumberOfNodes * NumberOfNodes);
+		for (var i = 0; i < NumberOfNodes; i++)
+		{
+			_adjacencyLists.Add(new List<int>(NumberOfNodes));
+			for (var j = 0; j < NumberOfNodes; j++)
+				if (adjacencyMatrix[i][j])
+					_adjacencyLists[i].Add(j);
+			_adjacencyLists[i].TrimExcess();
+		}
+		
+		_edges = new Edge[NumberOfNodes][];
+		for (var i = 0; i < NumberOfNodes; i++)
+		{
+			_edges[i] = new Edge[NumberOfNodes];
+			for (var j = 0; j < NumberOfNodes; j++)
+				_edges[i][j] = new Edge();
 		}
 	}
-	private void CreateEdges()
+
+    public IEnumerable<int> FordFulkersonAlgorithm
+    {
+	    
+    }
+    public IEnumerable<int> FindPathToNode(int startNode, int targetNode, INodeStorage nodesStorage)
+    {
+	    var searchRoute = NodeSearch(startNode, targetNode, nodesStorage);
+	    var path = new List<int>(NumberOfNodes);
+	    var node = searchRoute[^1];
+	    path.Add(node);
+		
+	    for (var i = searchRoute.Count - 2; i > -1; i--)
+	    {
+		    if (!_adjacencyMatrix[searchRoute[i]][node])
+			    continue;
+		    node = searchRoute[i];
+		    path.Add(node);
+	    }
+		
+	    path.TrimExcess();
+		
+	    return path;
+    }
+	private IList<int> NodeSearch(int startNode, int targetNode, INodeStorage nodesStorage)
 	{
-		for (int i = 0; i < _adjacencyMatrix.GetLength(0); i++)
+		var visited = new bool[NumberOfNodes];
+		
+		var dist = new int[NumberOfNodes];
+		Array.Fill(dist, int.MaxValue);
+		dist[startNode] = 0;
+		
+		nodesStorage.Insert(startNode);
+		
+		var visitedNodes = new List<int>(NumberOfNodes);
+		
+		while (!nodesStorage.IsEmpty())
 		{
-			for (int j = 0; j < _adjacencyMatrix.GetLength(0); j++)
+			var currentNode = nodesStorage.GetFirst();
+			visitedNodes.Add(currentNode);
+		
+			if (currentNode == targetNode)
+				return visitedNodes;
+		
+			var neighbours = GetAdjacentNodes(currentNode);
+			foreach (var nodeToGo in neighbours)
 			{
-				if (_adjacencyMatrix[i, j])
+				if (!visited[nodeToGo])
 				{
-					var edge = new Edge(_leftVertices[i], _rightVertices[j]);
-					_edges.Add(edge);
-					edge.ConnectVertices();
+					visited[nodeToGo] = true;
+		
+					dist[nodeToGo] = dist[currentNode] + GetEdge(currentNode, nodeToGo).Weight;
+					
+					nodesStorage.Insert(nodeToGo);
+				}
+				else
+				{
+					var weightFromCurrentNode = GetEdge(nodeToGo, currentNode).Weight;
+					if (dist[currentNode] + weightFromCurrentNode < dist[nodeToGo])
+						dist[nodeToGo] = dist[currentNode] + weightFromCurrentNode;
 				}
 			}
 		}
+		
+		return visitedNodes;
 	}
 
-	/*public List<Vertex> SearchMinimumVertexCoverOfAGraph(List<Vertex> greatestMatching)
-	{
-		if (!ValidateVertices(greatestMatching))
-			throw new Exception("Vertices must be part of the graph and must not be equal");
-		List<Vertex> minimumVertexCover = new List<Vertex>(20);
-		
-		for (int i = 0; i < greatestMatching.Count - 1; i++)
-			greatestMatching[i].InvertEdge(greatestMatching[i + 1]);
+	private IEnumerable<int> GetAdjacentNodes(int node) => _adjacencyLists[node];
+	//private IEnumerable<Edge> GetIncidentEdges(int node) => _edges[node];
+	private Edge GetEdge(int startingNode, int endNode) => _edges[startingNode][endNode];
 
-		var leftVerticesExceptGreatestMatching = _leftVertices.Except(greatestMatching);
-		foreach (var vertex in leftVerticesExceptGreatestMatching)
-			minimumVertexCover.AddRange(DepthFirstSearch(vertex));
+	private int NumberOfNodes => _adjacencyMatrix.Count;
 
-		minimumVertexCover = minimumVertexCover.Distinct().ToList();
-		var unvisitedLeftVertices = _leftVertices.Except(minimumVertexCover.Intersect(_leftVertices));
-		minimumVertexCover.RemoveAll(vertex => _leftVertices.Contains(vertex));
-		minimumVertexCover.AddRange(unvisitedLeftVertices);
-		
-		RestoreEdges();
-
-		return minimumVertexCover;
-	}
-	public List<Vertex> SearchMinimumVertexCoverOfAGraph()
-	{
-		var greatestMatching = FordFulkersonAlgorithm();
-		List<Vertex> minimumVertexCover = new List<Vertex>(20);
-		
-		for (int i = 0; i < greatestMatching.Count - 1; i++)
-			greatestMatching[i].InvertEdge(greatestMatching[i + 1]);
-
-		var leftVerticesExceptGreatestMatching = _leftVertices.Except(greatestMatching);
-		foreach (var vertex in leftVerticesExceptGreatestMatching)
-			minimumVertexCover.AddRange(DepthFirstSearch(vertex));
-
-		minimumVertexCover = minimumVertexCover.Distinct().ToList();
-		var unvisitedLeftVertices = _leftVertices.Except(minimumVertexCover.Intersect(_leftVertices));
-		minimumVertexCover.RemoveAll(vertex => _leftVertices.Contains(vertex));
-		minimumVertexCover.AddRange(unvisitedLeftVertices);
-
-		RestoreEdges();
-
-		return minimumVertexCover;
-	}
-	private bool ValidateVertices(List<Vertex> vertices)
-	{
-		var duplicates = vertices.GroupBy(v => v)
-			.Where(g => g.Count() > 1)
-			.Select(x => x.Key);
-		
-		if (duplicates.Any())
-			return false;
-		
-		foreach (var vertex in vertices)
-			if (vertex != Source && vertex != Drain && !_leftVertices.Contains(vertex) && !_rightVertices.Contains(vertex))
-				return false;
-		
-		return true;
-	}*/
-	
-	public void FordFulkersonAlgorithm()
-	{
-		var path = DeepFirstSearch();
-		while (path.Count > 0)
-		{
-			path.ForEach(edge =>
-			{
-				if (edge.Flow == Flow.Capacity)
-					edge.Invert();
-				else
-					edge.Delete();
-			});
-			path = DeepFirstSearch();
-		}
-	}
-	/*private void RestoreEdges()
-	{
-		Source.RemoveEdges();
-		Array.ForEach(_leftVertices, vertex => vertex.RemoveEdges());
-		Array.ForEach(_rightVertices, vertex => vertex.RemoveEdges());
-		Drain.RemoveEdges();
-
-		ConnectVertices();
-	}*/
-	
-	public List<Edge> DepthFirstSearch()
-	{
-		var forks = new Stack<Vertex>();
-		forks.Push(Source);
-		Vertex fork;
-		var edges = new Stack<Edge>();
-		edges.Push(new Edge(Source, Drain));
-		Edge edge
-		List<Edge> path = new List<Edge>(20);
-		List<Vertex> visitedVertices = new List<Vertex>(20);
-
-		while (forks.Count > 0)
-		{
-			fork = forks.Pop();
-			edge = edges.Pop();
-			if (!fork.Visited)
-			{
-				if (edge.Flow == edge.Capacity)
-					edge.Flow -= 1;
-				else
-					edge.Flow += 1;
-				
-				fork.Visited = true;
-
-				visitedVertices.Add(fork);
-				path.Add(edge);
-				
-				
-				if (fork == Drain)
-					break;
-				
-				fork.Edges.ForEach(edge =>
-				{
-					var vertex = edge.End;
-					if (!vertex.Visited)
-						forks.Push(vertex);
-				});
-			}
-		}
-
-		visitedVertices.ForEach(vertex => vertex.Visited = false);
-
-		return path;
-	}
-	public List<Vertex> DepthFirstSearch(Vertex startingVertex)
-	{
-		if (!ValidateVertex(startingVertex))
-			throw new Exception("Vertex must be part of the graph");
-		
-		var forks = new Stack<Vertex>();
-		forks.Push(startingVertex);
-		Vertex fork;
-		List<Vertex> path = new List<Vertex>(20);
-
-		while (forks.Count > 0)
-		{
-			fork = forks.Pop();
-			if (!fork.Visited)
-			{
-				fork.Visited = true;
-				path.Add(fork);
-				
-				fork.OutgoingEdges.ForEach(edge =>
-				{
-					var vertex = edge.End;
-					if (!vertex.Visited)
-						forks.Push(vertex);
-				});
-			}
-		}
-
-		path.ForEach(vertex => vertex.Visited = false);
-			
-		path.Remove(startingVertex);
-
-		return path;
-	}
-	public List<Vertex> DepthFirstSearch(Vertex startingVertex, Vertex endVertex)
-	{
-		if (startingVertex == endVertex || !ValidateVertex(startingVertex) || !ValidateVertex(endVertex))
-			throw new Exception("Vertices must be part of the graph and must not be equal");
-		
-		var forks = new Stack<Vertex>();
-		forks.Push(startingVertex);
-		Vertex fork;
-		List<Vertex> path = new List<Vertex>(20);
-
-		while (forks.Count > 0)
-		{
-			fork = forks.Pop();
-			if (!fork.Visited)
-			{
-				fork.Visited = true;
-				path.Add(fork);
-
-				if (fork == endVertex)
-					break;
-				
-				fork.OutgoingEdges.ForEach(edge =>
-				{
-					var vertex = edge.End;
-					if (!vertex.Visited)
-						forks.Push(vertex);
-				});
-			}
-		}
-
-		path.ForEach(vertex => vertex.Visited = false);
-			
-		path.Remove(startingVertex);
-		path.Remove(endVertex);
-
-		return path;
-	}
-	private bool ValidateVertex(Vertex vertex) =>
-		vertex == Source || vertex == Drain || _leftVertices.Contains(vertex) || _rightVertices.Contains(vertex);
-
-	public IEnumerable<Edge> GetLoadedEdges() => _edges.Where(e => e.Flow == e.Capacity);
-	
-	public bool[,] AdjacencyMatrix => (bool[,])_adjacencyMatrix.Clone();
-	public List<Edge> Edges => new(_edges);
-	public Vertex[] LeftVertices => (Vertex[])_leftVertices.Clone();
-	public Vertex[] RightVertices => (Vertex[])_rightVertices.Clone();
-	public Vertex Source { get; }
-	public Vertex Drain { get; }
-	
-	private bool[,] _adjacencyMatrix;
-	private List<Edge> _edges;
-	private Vertex[] _leftVertices, _rightVertices;
+    private readonly List<List<bool>> _adjacencyMatrix;
+	private readonly List<List<int>> _adjacencyLists;
+	private readonly Edge[][] _edges;
 }

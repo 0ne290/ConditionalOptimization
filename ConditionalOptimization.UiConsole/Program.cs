@@ -6,20 +6,20 @@ class Program
 {
     static void Main()
     {
-	    var adjacencyMatrix = new[,]
-	    {
-	    	{ true, false, false },
-	    	{ true, true, true },
-	    	{ false, true, false }
-	    };
+	    //var adjacencyMatrix = new[,]
+	    //{
+	    //	{ true, false, false },
+	    //	{ true, true, true },
+	    //	{ false, true, false }
+	    //};
 	    
-		//var adjacencyMatrix = new[,]
-		//{
-		//	{ true, true, true, true },
-		//	{ false, true, true, true },
-		//	{ false, false, true, true },
-		//	{ true, true, false, false }
-		//};
+		var adjacencyMatrix = new[,]
+		{
+			{ true, true, true, true },
+			{ false, true, true, true },
+			{ false, false, true, true },
+			{ true, true, false, false }
+		};
 		
 		//var adjacencyMatrix = new[,]
 		//{
@@ -34,8 +34,7 @@ class Program
 
         var bipartiteGraph = new BipartiteGraph(adjacencyMatrix);
         
-        bipartiteGraph.FordFulkersonAlgorithm();
-        var greatestMatching = bipartiteGraph.GetLoadedEdges();
+        var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
         //var greatestMatching = bipartiteGraph.DepthFirstSearch(bipartiteGraph.Source, bipartiteGraph.Drain);
         //var greatestMatching = bipartiteGraph.SearchMinimumVertexCoverOfAGraph();
         Console.WriteLine();
