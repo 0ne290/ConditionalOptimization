@@ -1,3 +1,4 @@
+using System.Xml;
 using ConditionalOptimization.Logic.Contracts;
 
 namespace ConditionalOptimization.Logic;
@@ -10,22 +11,30 @@ public class Graph
 			throw new Exception("The adjacency matrix must be square");
 		_adjacencyMatrix = (bool[,])adjacencyMatrix.Clone();
 		
-		_adjacencyLists = new List<List<int>>(NumberOfNodes);
-		for (var i = 0; i < NumberOfNodes; i++)
-		{
-			_adjacencyLists.Add(new List<int>(NumberOfNodes));
-			for (var j = 0; j < NumberOfNodes; j++)
-				if (adjacencyMatrix[i, j])
-					_adjacencyLists[i].Add(j);
-			_adjacencyLists[i].TrimExcess();
-		}
-		
 		_edges = new Edge[NumberOfNodes][];
 		for (var i = 0; i < NumberOfNodes; i++)
 		{
 			_edges[i] = new Edge[NumberOfNodes];
 			for (var j = 0; j < NumberOfNodes; j++)
+			{
 				_edges[i][j] = new Edge();
+			}
+		}
+        
+		_adjacencyLists = new List<List<int>>(NumberOfNodes);
+		for (var i = 0; i < NumberOfNodes; i++)
+		{
+			_adjacencyLists.Add(new List<int>(NumberOfNodes));
+			for (var j = 0; j < NumberOfNodes; j++)
+			{
+				if (adjacencyMatrix[i, j])
+				{
+					_edges[i][j].Flow = 1;
+					_edges[j][i].Flow = 0;
+					_adjacencyLists[i].Add(j);
+				}
+			}
+			_adjacencyLists[i].TrimExcess();
 		}
 	}
 
@@ -66,11 +75,40 @@ public class Graph
 		return new Graph(adjacencyArray);
 	}
 
-    //public IEnumerable<int> FordFulkersonAlgorithm
-    //{
-	//    
-    //}
-    public IEnumerable<int> FindPathToNode(int startNode, int targetNode, INodeStorage nodesStorage)
+    public IEnumerable<int> FordFulkersonAlgorithm()
+    {
+	    var path = FindPathToNode(0, NumberOfNodes - 1, new NodeStack(NumberOfNodes));
+	    while (path.Count > 1)
+	    {
+		    path = path.Reverse().ToList();
+		    //Console.WriteLine();
+		    //foreach (var node in path)
+			//    Console.Write($"{node} --> ");
+		    //Console.WriteLine();
+		    for (var i = 0; i < path.Count - 1; i++)
+		    {
+			    GetEdge(path[i], path[i + 1]).Flow = 1;
+			    GetEdge(path[i + 1], path[i]).Flow = 0;
+		    }
+			path = FindPathToNode(0, NumberOfNodes - 1, new NodeStack(NumberOfNodes));
+		}
+	    
+	    var x = new List<int>(NumberOfNodes);
+	    for (var i = 0; i < NumberOfNodes; i++)
+	    {
+		    for (var j = 0; j < NumberOfNodes; j++)
+		    {
+			    if (GetEdge(i, j).Flow == 1)
+			    {
+				    x.Add(i);
+				    x.Add(j);
+			    }
+		    }
+	    }
+
+	    return x;
+    }
+    public IList<int> FindPathToNode(int startNode, int targetNode, INodeStorage nodesStorage)
     {
 	    var searchRoute = NodeSearch(startNode, targetNode, nodesStorage);
 	    var path = new List<int>(NumberOfNodes);
@@ -113,7 +151,7 @@ public class Graph
 			var neighbours = GetAdjacentNodes(currentNode);
 			foreach (var nodeToGo in neighbours)
 			{
-				if (visited[nodeToGo])
+				if (visited[nodeToGo] || GetEdge(currentNode, nodeToGo).Flow == 1)
 					continue;
 				
 				nodesStorage.Insert(nodeToGo);
@@ -125,7 +163,7 @@ public class Graph
 
 	private IEnumerable<int> GetAdjacentNodes(int node) => _adjacencyLists[node];
 	//private IEnumerable<Edge> GetIncidentEdges(int node) => _edges[node];
-	//private Edge GetEdge(int startingNode, int endNode) => _edges[startingNode][endNode];
+	private Edge GetEdge(int startingNode, int endNode) => _edges[startingNode][endNode];
 
 	public int NumberOfNodes => _adjacencyMatrix.GetLength(0);
 
