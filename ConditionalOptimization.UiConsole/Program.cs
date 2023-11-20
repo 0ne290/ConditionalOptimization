@@ -2,9 +2,9 @@
 
 namespace ConditionalOptimization.UiConsole;
 
-class Program
+internal static class Program
 {
-    static void Main()
+	private static void Main()
     {
 	    //var adjacencyMatrix = new[,]
 	    //{
@@ -13,12 +13,12 @@ class Program
 	    //	{ false, true, false }
 	    //};
 	    
-		var adjacencyMatrix = new[,]
+		var adjacencyMatrix = new[]
 		{
-			{ true, true, true, true },
-			{ false, true, true, true },
-			{ false, false, true, true },
-			{ true, true, false, false }
+			new[] { true, true, true, true },
+			new[] { false, true, true, true },
+			new[] { false, false, true, true },
+			new[] { true, true, false, false }
 		};
 		
 		//var adjacencyMatrix = new[,]
@@ -32,15 +32,17 @@ class Program
 		//	{ false, true, false, false, false, true, false }
 		//};
 
-        var bipartiteGraph = new BipartiteGraph(adjacencyMatrix);
+        var bipartiteGraph = Graph.CreateBipartiteGraph(adjacencyMatrix);
         
-        var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
+        //var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
         //var greatestMatching = bipartiteGraph.DepthFirstSearch(bipartiteGraph.Source, bipartiteGraph.Drain);
         //var greatestMatching = bipartiteGraph.SearchMinimumVertexCoverOfAGraph();
+        var greatestMatching = bipartiteGraph.NodeSearch(0, 9,
+	        new NodeStack(bipartiteGraph.NumberOfNodes));
         Console.WriteLine();
         Console.WriteLine();
-        foreach (var edge in greatestMatching)
-            Console.Write($"{edge.Start.Id} --> {edge.End.Id}");
+        foreach (var node in greatestMatching)
+	        Console.Write($"{node} --> ");
 
         Console.WriteLine();
 		Console.Write("Для завершения программы нажмите любую клавишу...");
