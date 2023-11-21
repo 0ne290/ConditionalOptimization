@@ -5,7 +5,7 @@ namespace ConditionalOptimization.Logic;
 
 public class Graph
 {
-	private Graph(bool[,] adjacencyMatrix)
+	private Graph(bool[,] adjacencyMatrix, bool[][] adjacencyList)
 	{
 		if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
 			throw new Exception("The adjacency matrix must be square");
@@ -17,9 +17,21 @@ public class Graph
 			_edges[i] = new Edge[NumberOfNodes];
 			for (var j = 0; j < NumberOfNodes; j++)
 			{
-				_edges[i][j] = new Edge();
+				_edges[i][j] = new Edge(1);
 			}
 		}
+
+		var k = 0;
+		for (var i = NumberOfNodes / 2 - 1; i < NumberOfNodes - 1; i++)
+		{
+			_adjacencyMatrix[NumberOfNodes - 1, i] = true;
+			for (var j = 1; j < dimensionList + 1; j++)
+				_adjacencyMatrix[i, j] = adjacencyList[j - 1][k];
+			k++;
+		}
+
+		for (var i = 1; i < NumberOfNodes / 2 - 1; i++)
+			adjacencyArray[i, 0] = true;
         
 		_adjacencyLists = new List<List<int>>(NumberOfNodes);
 		for (var i = 0; i < NumberOfNodes; i++)
@@ -38,18 +50,15 @@ public class Graph
 		}
 	}
 
-	public static Graph CreateGraph(bool[,] adjacencyMatrix) => new Graph(adjacencyMatrix);
+	public static Graph CreateGraph(bool[,] adjacencyMatrix) => new Graph(adjacencyMatrix, null);
 	public static Graph CreateBipartiteGraph(bool[][] adjacencyList)
 	{
 		var dimensionList = adjacencyList.Length;
 		var dimensionArray = dimensionList * 2 + 2;
 		var adjacencyArray = new bool[dimensionArray, dimensionArray];
 		
-		for (var i = 1; i < dimensionList + 1; i++)
-			adjacencyArray[0, i] = true;
-		
 		for (var i = dimensionList + 1; i < dimensionArray - 1; i++)
-			adjacencyArray[dimensionArray - 1, i] = true;
+			adjacencyArray[i, dimensionArray - 1] = true;
 
 		var k = 0;
 		for (var i = 1; i < dimensionList + 1; i++)
@@ -58,21 +67,12 @@ public class Graph
 			k++;
 			if (array.Length != dimensionList)
 				throw new Exception("The adjacency matrix must be square");
-			adjacencyArray[i, 0] = true;
+			adjacencyArray[0, i] = true;
 			for (var j = dimensionList + 1; j < dimensionArray - 1; j++)
 				adjacencyArray[i, j] = array[j - (dimensionList + 1)];
 		}
 
-		k = 0;
-		for (var i = dimensionList + 1; i < dimensionArray - 1; i++)
-		{
-			adjacencyArray[i, dimensionArray - 1] = true;
-			for (var j = 1; j < dimensionList + 1; j++)
-				adjacencyArray[i, j] = adjacencyList[j - 1][k];
-			k++;
-		}
-		
-		return new Graph(adjacencyArray);
+		return new Graph(adjacencyArray, adjacencyList);
 	}
 
     public IEnumerable<int> FordFulkersonAlgorithm()
@@ -87,8 +87,8 @@ public class Graph
 		    //Console.WriteLine();
 		    for (var i = 0; i < path.Count - 1; i++)
 		    {
-			    GetEdge(path[i], path[i + 1]).Flow = 1;
-			    GetEdge(path[i + 1], path[i]).Flow = 0;
+			    GetEdge(path[i], path[i + 1]).SendFlow(1);
+			    GetEdge(path[i + 1], path[i]).ReceiveFlow(1);
 		    }
 			path = FindPathToNode(0, NumberOfNodes - 1, new NodeStack(NumberOfNodes));
 		}
@@ -98,7 +98,7 @@ public class Graph
 	    {
 		    for (var j = 0; j < NumberOfNodes; j++)
 		    {
-			    if (GetEdge(i, j).Flow == 1)
+			    if (GetEdge(i, j).IsBusy())
 			    {
 				    x.Add(i);
 				    x.Add(j);
@@ -151,7 +151,7 @@ public class Graph
 			var neighbours = GetAdjacentNodes(currentNode);
 			foreach (var nodeToGo in neighbours)
 			{
-				if (visited[nodeToGo] || GetEdge(currentNode, nodeToGo).Flow == 1)
+				if (visited[nodeToGo] || GetEdge(currentNode, nodeToGo).IsBusy)
 					continue;
 				
 				nodesStorage.Insert(nodeToGo);
