@@ -51,25 +51,28 @@ public class Graph
 	}
 
 	public static Graph CreateGraph(bool[,] adjacencyMatrix) => new Graph(adjacencyMatrix, null);
-	public static Graph CreateBipartiteGraph(bool[][] adjacencyList)
+	public static Graph CreateBipartiteGraph(bool[,] adjacencyList)
 	{
-		var dimensionList = adjacencyList.Length;
+		if (adjacencyList.GetLength(0) != adjacencyList.GetLength(1))
+			throw new Exception("");
+		var dimensionList = adjacencyList.GetLength(0);
 		var dimensionArray = dimensionList * 2 + 2;
 		var adjacencyArray = new bool[dimensionArray, dimensionArray];
+		var rightPartIindex = dimensionList + 1;
+		var leftPartIndex = 1;
+		var drainIndex = dimensionArray - 1;
+		var sourceIndex = 0;
 		
-		for (var i = dimensionList + 1; i < dimensionArray - 1; i++)
-			adjacencyArray[i, dimensionArray - 1] = true;
+		for (var i = rightPartIndex; i < drainIndex; i++)
+			adjacencyArray[i, drainIndex] = true;
 
 		var k = 0;
-		for (var i = 1; i < dimensionList + 1; i++)
+		for (var i = leftPartIndex; i < rightPartIndex; i++)
 		{
-			var array = adjacencyList[k];
+			adjacencyArray[sourceIndex, i] = true;
+			for (var j = rightPartIndex; j < drainIndex; j++)
+				adjacencyArray[i, j] = adjacencyList[k][j - rightPartIndex];
 			k++;
-			if (array.Length != dimensionList)
-				throw new Exception("The adjacency matrix must be square");
-			adjacencyArray[0, i] = true;
-			for (var j = dimensionList + 1; j < dimensionArray - 1; j++)
-				adjacencyArray[i, j] = array[j - (dimensionList + 1)];
 		}
 
 		return new Graph(adjacencyArray, adjacencyList);
