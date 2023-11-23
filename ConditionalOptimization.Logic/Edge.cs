@@ -18,10 +18,11 @@ public class Edge
 	public bool IsBusy() => _capacity < 1;
 	
 	public bool IsReverse { get; }
-	public int Capacity
+
+	private int Capacity
 	{
 		get => _capacity;
-		private set
+		set
 		{
 			if (value < 0)
 				throw new Exception("Capacity cannot be less than zero");
@@ -30,5 +31,5 @@ public class Edge
 	}
 	
 	private int _capacity;
-	private int _weight;
+	private readonly int _weight;
 }

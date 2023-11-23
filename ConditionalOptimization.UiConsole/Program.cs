@@ -21,18 +21,18 @@ internal static class Program
 		//	new[] { true, true, false, false }
 		//};
 		
-		var adjacencyMatrix = new[]
+		var adjacencyMatrix = new[,]
 		{
-			new[] { false, true, false, false, false, false, false },
-			new[] { true, true, true, true, true, false, false },
-			new[] { false, true, false, true, false, true, false },
-			new[] { false, false, true, false, true, false, true },
-			new[] { false, false, true, false, true, false, true },
-			new[] { false, false, false, true, false, true, false },
-			new[] { false, true, false, false, false, true, false }
+			{ false, true, false, false, false, false, false },
+			{ true, true, true, true, true, false, false },
+			{ false, true, false, true, false, true, false },
+			{ false, false, true, false, true, false, true },
+			{ false, false, true, false, true, false, true },
+			{ false, false, false, true, false, true, false },
+			{ false, true, false, false, false, true, false }
 		};
 
-        var bipartiteGraph = Graph.CreateBipartiteGraph(adjacencyMatrix);
+        var bipartiteGraph = new BipartiteGraph(adjacencyMatrix);
         
         var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
         Console.WriteLine();

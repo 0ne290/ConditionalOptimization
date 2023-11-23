@@ -1,4 +1,3 @@
-using System.Xml;
 using ConditionalOptimization.Logic.Contracts;
 
 namespace ConditionalOptimization.Logic;
@@ -55,20 +54,20 @@ public class BipartiteGraph
 			}
 		}
 		
-		_graphAdjacencyLists = new List<List<int>>(NumberOfNodes);
+		List<List<int>> graphAdjacencyLists = new(NumberOfNodes);
 		_transportNetworkAdjacencyLists = new List<List<int>>(NumberOfNodes);
 		for (var i = 0; i < NumberOfNodes; i++)
 		{
-			_graphAdjacencyLists.Add(new List<int>(NumberOfNodes));
+			graphAdjacencyLists.Add(new List<int>(NumberOfNodes));
 			_transportNetworkAdjacencyLists.Add(new List<int>(NumberOfNodes));
 			for (var j = 0; j < NumberOfNodes; j++)
 			{
 				if (_graphAdjacencyMatrix[i, j])
-					_graphAdjacencyLists[i].Add(j);
+					graphAdjacencyLists[i].Add(j);
 				if (_transportNetworkAdjacencyMatrix[i, j])
 					_transportNetworkAdjacencyLists[i].Add(j);
 			}
-			_graphAdjacencyLists[i].TrimExcess();
+			graphAdjacencyLists[i].TrimExcess();
 			_transportNetworkAdjacencyLists[i].TrimExcess();
 		}
 	}
@@ -183,12 +182,11 @@ public class BipartiteGraph
 	
 	private IEnumerable<int> GetAdjacentNodes(int node) => _transportNetworkAdjacencyLists[node];
 	private Edge GetEdge(int startingNode, int endNode) => _edges[startingNode, endNode];
-	
-	public int NumberOfNodes => _graphAdjacencyMatrix.GetLength(0);
+
+	private int NumberOfNodes => _graphAdjacencyMatrix.GetLength(0);
 	
 	private readonly bool[,] _graphAdjacencyMatrix;
 	private readonly bool[,] _transportNetworkAdjacencyMatrix;
-	private readonly List<List<int>> _graphAdjacencyLists;
 	private readonly List<List<int>> _transportNetworkAdjacencyLists;
 	private readonly Edge[,] _edges;
 }
