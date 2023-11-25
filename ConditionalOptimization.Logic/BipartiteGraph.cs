@@ -1,74 +1,84 @@
 using ConditionalOptimization.Logic.Contracts;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 namespace ConditionalOptimization.Logic;
 
 public class BipartiteGraph
 {
-	public BipartiteGraph(bool[,] adjacencyList)
+	public BipartiteGraph(bool[,] bipartiteGraphAdjacencyMatrix)
 	{
-		if (adjacencyList.GetLength(0) != adjacencyList.GetLength(1))
+		if (bipartiteGraphAdjacencyMatrix.GetLength(0) != bipartiteGraphAdjacencyMatrix.GetLength(1))
 			throw new Exception("The adjacency matrix must be square");
 		
-		_graphAdjacencyMatrix = new bool[adjacencyList.GetLength(0) * 2 + 2, adjacencyList.GetLength(0) * 2 + 2];
-		_transportNetworkAdjacencyMatrix = new bool[NumberOfNodes, NumberOfNodes];
+		var directedGraphAdjacencyMatrix = CreateAdjacencyMatrix(bipartiteGraphAdjacencyMatrix);
+		CreateEdges(directedGraphAdjacencyMatrix);
+		CreateAdjacencyLists();
+	}
+
+	private bool[,] CreateAdjacencyMatrix(bool[,] bipartiteGraphAdjacencyMatrix)
+	{
+		_adjacencyMatrix = new bool[bipartiteGraphAdjacencyMatrix.GetLength(0) * 2 + 2, bipartiteGraphAdjacencyMatrix.GetLength(0) * 2 + 2];
+		var directedGraphAdjacencyMatrix = new bool[NumberOfNodes, NumberOfNodes];
 		
-		var rightPartIndex = adjacencyList.GetLength(0) + 1;
-		var leftPartIndex = 1;
+		var rightPartIndex = bipartiteGraphAdjacencyMatrix.GetLength(0) + 1;
+		const int leftPartIndex = 1;
 		var drainIndex = NumberOfNodes - 1;
-		var sourceIndex = 0;
+		const int sourceIndex = 0;
 		
 		for (var i = rightPartIndex; i < drainIndex; i++)
 		{
-			_graphAdjacencyMatrix[i, drainIndex] = true;
-			_transportNetworkAdjacencyMatrix[i, drainIndex] = true;
-			_transportNetworkAdjacencyMatrix[drainIndex, i] = true;
+			directedGraphAdjacencyMatrix[i, drainIndex] = true;
+			_adjacencyMatrix[i, drainIndex] = true;
+			_adjacencyMatrix[drainIndex, i] = true;
 		}
 
 		var k = 0;
 		for (var i = leftPartIndex; i < rightPartIndex; i++)
 		{
-			_graphAdjacencyMatrix[sourceIndex, i] = true;
-			_transportNetworkAdjacencyMatrix[sourceIndex, i] = true;
-			_transportNetworkAdjacencyMatrix[i, sourceIndex] = true;
+			directedGraphAdjacencyMatrix[sourceIndex, i] = true;
+			_adjacencyMatrix[sourceIndex, i] = true;
+			_adjacencyMatrix[i, sourceIndex] = true;
 			for (var j = rightPartIndex; j < drainIndex; j++)
 			{
-				_graphAdjacencyMatrix[i, j] = adjacencyList[k, j - rightPartIndex];
-				_transportNetworkAdjacencyMatrix[i, j] = adjacencyList[k, j - rightPartIndex];
-				_transportNetworkAdjacencyMatrix[j, i] = adjacencyList[k, j - rightPartIndex];
+				directedGraphAdjacencyMatrix[i, j] = bipartiteGraphAdjacencyMatrix[k, j - rightPartIndex];
+				_adjacencyMatrix[i, j] = bipartiteGraphAdjacencyMatrix[k, j - rightPartIndex];
+				_adjacencyMatrix[j, i] = bipartiteGraphAdjacencyMatrix[k, j - rightPartIndex];
 			}
 			k++;
 		}
-		
+
+		return directedGraphAdjacencyMatrix;
+	}
+
+	private void CreateEdges(bool[,] directedGraphAdjacencyMatrix)
+	{
 		_edges = new Edge[NumberOfNodes, NumberOfNodes];
 		for (var i = 0; i < NumberOfNodes; i++)
 		{
 			for (var j = 0; j < NumberOfNodes; j++)
 			{
-				if (_graphAdjacencyMatrix[i, j])
+				if (directedGraphAdjacencyMatrix[i, j])
 				{
 					_edges[i, j] = new Edge(1, false);
 					_edges[j, i] = new Edge(0, true);
 				}
-				else if (!_transportNetworkAdjacencyMatrix[i, j])
+				else if (!_adjacencyMatrix[i, j])
 					_edges[i, j] = new Edge();
 			}
 		}
-		
-		List<List<int>> graphAdjacencyLists = new(NumberOfNodes);
-		_transportNetworkAdjacencyLists = new List<List<int>>(NumberOfNodes);
+	}
+
+	private void CreateAdjacencyLists()
+	{
+		_adjacencyLists = new List<List<int>>(NumberOfNodes);
 		for (var i = 0; i < NumberOfNodes; i++)
 		{
-			graphAdjacencyLists.Add(new List<int>(NumberOfNodes));
-			_transportNetworkAdjacencyLists.Add(new List<int>(NumberOfNodes));
+			_adjacencyLists.Add(new List<int>(NumberOfNodes));
 			for (var j = 0; j < NumberOfNodes; j++)
-			{
-				if (_graphAdjacencyMatrix[i, j])
-					graphAdjacencyLists[i].Add(j);
-				if (_transportNetworkAdjacencyMatrix[i, j])
-					_transportNetworkAdjacencyLists[i].Add(j);
-			}
-			graphAdjacencyLists[i].TrimExcess();
-			_transportNetworkAdjacencyLists[i].TrimExcess();
+				if (_adjacencyMatrix[i, j])
+					_adjacencyLists[i].Add(j);
+			_adjacencyLists[i].TrimExcess();
 		}
 	}
 	
@@ -108,7 +118,7 @@ public class BipartiteGraph
 		
 		for (var i = searchRoute.Count - 2; i > -1; i--)
 		{
-			if (!_transportNetworkAdjacencyMatrix[searchRoute[i], node])
+			if (!_adjacencyMatrix[searchRoute[i], node])
 				continue;
 			node = searchRoute[i];
 			path.Add(node);
@@ -180,13 +190,12 @@ public class BipartiteGraph
 				GetEdge(i, j).ResetСapacity();
 	}
 	
-	private IEnumerable<int> GetAdjacentNodes(int node) => _transportNetworkAdjacencyLists[node];
+	private IEnumerable<int> GetAdjacentNodes(int node) => _adjacencyLists[node];
 	private Edge GetEdge(int startingNode, int endNode) => _edges[startingNode, endNode];
 
-	private int NumberOfNodes => _graphAdjacencyMatrix.GetLength(0);
-	
-	private readonly bool[,] _graphAdjacencyMatrix;
-	private readonly bool[,] _transportNetworkAdjacencyMatrix;
-	private readonly List<List<int>> _transportNetworkAdjacencyLists;
-	private readonly Edge[,] _edges;
+	private int NumberOfNodes => _adjacencyMatrix.GetLength(0);
+
+	private bool[,] _adjacencyMatrix;
+	private List<List<int>> _adjacencyLists;
+	private Edge[,] _edges;
 }
