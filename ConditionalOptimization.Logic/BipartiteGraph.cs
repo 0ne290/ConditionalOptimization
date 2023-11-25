@@ -116,12 +116,8 @@ public class BipartiteGraph
 		var path = new List<int>(NumberOfNodes);
 		
 		var searchRoute = NodeSearch(startNode, targetNode, _transportNetworkAdjacencyLists, nodesStorage);
-		if (searchRoute.Count < 1)
-		{
-			path.TrimExcess();
-			
-			return path;
-		}
+		if (searchRoute[^1] != targetNode)
+			return new List<int>(0);
 		
 		var node = searchRoute[^1];
 		path.Add(node);
@@ -171,18 +167,18 @@ public class BipartiteGraph
 			}
 		}
 		
-		return new List<int>(0);
+		return visitedNodes;
 	}
 	
 	private IList<int> GetReverseFreeEdges()
 	{
 		var edges = new List<int>(NumberOfNodes);
 		
-		for (var i = 0; i < NumberOfNodes; i++)
+		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
 		{
-			for (var j = 0; j < NumberOfNodes; j++)
+			for (var j = _rightPartIndex; j < _drainIndex; j++)
 			{
-				if (!GetEdge(i, j).IsBusy() && GetEdge(i, j).IsReverse)
+				if (!GetEdge(j, i).IsBusy() && GetEdge(j, i).IsReverse)
 				{
 					edges.Add(i);
 					edges.Add(j);
@@ -202,7 +198,7 @@ public class BipartiteGraph
 
 	public ICollection<int> SearchMinimumVertexCover(IList<int> greatestMatching)
 	{
-		for (var i = 0; i < greatestMatching.Count - 1; i++)
+		for (var i = 0; i < greatestMatching.Count; i += 2)
 		{
 			GetEdge(greatestMatching[i], greatestMatching[i + 1]).SendFlow(1);
 			GetEdge(greatestMatching[i + 1], greatestMatching[i]).ReceiveFlow(1);
@@ -217,13 +213,21 @@ public class BipartiteGraph
 		
 		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
 		{
-			var searchRoute = NodeSearch(i, -1, _graphAdjacencyLists, new NodeStack(NumberOfNodes));
-			foreach (var node in searchRoute)
+			if (!greatestMatching.Contains(i))
 			{
-				leftUnvisitedNodes.Remove(node);
-				rightVisitedNodes.Add(node);
+				var searchRoute = NodeSearch(i, -1, _graphAdjacencyLists, new NodeStack(NumberOfNodes));
+				foreach (var node in searchRoute)
+				{
+					Console.Write($"{node} --> ");
+					leftUnvisitedNodes.Remove(node);
+					if (node >= _rightPartIndex)
+						rightVisitedNodes.Add(node);
+				}
+				Console.WriteLine();
 			}
 		}
+		
+		RestoreEdges();
 		
 		leftUnvisitedNodes.UnionWith(rightVisitedNodes);
 		return minimumVertexCover;

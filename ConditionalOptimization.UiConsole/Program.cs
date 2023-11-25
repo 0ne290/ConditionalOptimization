@@ -35,6 +35,7 @@ internal static class Program
         var bipartiteGraph = new BipartiteGraph(adjacencyMatrix);
         
         var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
+        var minimumVertexCover = bipartiteGraph.SearchMinimumVertexCover(greatestMatching);
         Console.WriteLine();
         Console.WriteLine();
         foreach (var node in greatestMatching)
