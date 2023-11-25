@@ -213,17 +213,14 @@ public class BipartiteGraph
 		
 		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
 		{
-			if (!greatestMatching.Contains(i))
+			if (greatestMatching.Contains(i))
+				continue;
+			var searchRoute = NodeSearch(i, -1, _graphAdjacencyLists, new NodeStack(NumberOfNodes));
+			foreach (var node in searchRoute)
 			{
-				var searchRoute = NodeSearch(i, -1, _graphAdjacencyLists, new NodeStack(NumberOfNodes));
-				foreach (var node in searchRoute)
-				{
-					Console.Write($"{node} --> ");
-					leftUnvisitedNodes.Remove(node);
-					if (node >= _rightPartIndex)
-						rightVisitedNodes.Add(node);
-				}
-				Console.WriteLine();
+				leftUnvisitedNodes.Remove(node);
+				if (node >= _rightPartIndex)
+					rightVisitedNodes.Add(node);
 			}
 		}
 		

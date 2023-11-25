@@ -38,7 +38,7 @@ internal static class Program
         var minimumVertexCover = bipartiteGraph.SearchMinimumVertexCover(greatestMatching);
         Console.WriteLine();
         Console.WriteLine();
-        foreach (var node in greatestMatching)
+        foreach (var node in minimumVertexCover)
 	        Console.Write($"{node} --> ");
 
         Console.WriteLine();
