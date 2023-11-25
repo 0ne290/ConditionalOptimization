@@ -200,7 +200,7 @@ public class BipartiteGraph
 				GetEdge(i, j).ResetСapacity();
 	}
 
-	public IList<int> SearchMinimumVertexCover(IList<int> greatestMatching)
+	public ICollection<int> SearchMinimumVertexCover(IList<int> greatestMatching)
 	{
 		for (var i = 0; i < greatestMatching.Count - 1; i++)
 		{
@@ -208,11 +208,25 @@ public class BipartiteGraph
 			GetEdge(greatestMatching[i + 1], greatestMatching[i]).ReceiveFlow(1);
 		}
 
+		var leftUnvisitedNodes = new HashSet<int>(_rightPartIndex - LeftPartIndex);
+		var minimumVertexCover = leftUnvisitedNodes;
+		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
+			leftUnvisitedNodes.Add(i);
+		
+		var rightVisitedNodes = new HashSet<int>();
+		
 		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
 		{
 			var searchRoute = NodeSearch(i, -1, _graphAdjacencyLists, new NodeStack(NumberOfNodes));
-			// Выбрать все левые непосещенные и правые посещенные
+			foreach (var node in searchRoute)
+			{
+				leftUnvisitedNodes.Remove(node);
+				rightVisitedNodes.Add(node);
+			}
 		}
+		
+		leftUnvisitedNodes.UnionWith(rightVisitedNodes);
+		return minimumVertexCover;
 	}
 	
 	private Edge GetEdge(int startingNode, int endNode) => _edges[startingNode, endNode];
