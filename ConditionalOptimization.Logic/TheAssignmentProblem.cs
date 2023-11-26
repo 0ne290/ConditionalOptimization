@@ -15,22 +15,6 @@ public class TheAssignmentProblem
         SubTheMinimumCellFromARow(costTable);
         SubTheMinimumCellFromAColumn(costTable);
         
-        foreach (var row in costTable.Rows)
-        {
-            foreach (var cell in row)
-                Console.Write($"{cell.Value} --> ");
-            Console.WriteLine();
-        }
-        
-        Console.WriteLine();
-        
-        foreach (var column in costTable.Columns)
-        {
-            foreach (var cell in column)
-                Console.Write($"{cell.Value} --> ");
-            Console.WriteLine();
-        }
-        
         //return result;
     }
     private void SubTheMinimumCellFromARow(Table<double> table)
@@ -40,8 +24,9 @@ public class TheAssignmentProblem
             var rowMinimumCell = row.Min();
             if (rowMinimumCell == null)
                 throw new ArgumentNullException(nameof(rowMinimumCell));
+            var rowMinimum = rowMinimumCell.Value;
             foreach (var cell in row)
-                cell.Value -= rowMinimumCell.Value;
+                cell.Value -= rowMinimum;
         }
     }
     private void SubTheMinimumCellFromAColumn(Table<double> table)
@@ -51,8 +36,9 @@ public class TheAssignmentProblem
             var columnMinimumCell = column.Min();
             if (columnMinimumCell == null)
                 throw new ArgumentNullException(nameof(columnMinimumCell));
+            var columnMinimum = columnMinimumCell.Value;
             foreach (var cell in column)
-                cell.Value -= columnMinimumCell.Value;
+                cell.Value -= columnMinimum;
         }
     }
 
