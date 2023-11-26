@@ -6,17 +6,14 @@ namespace ConditionalOptimization.Logic;
 
 public class BipartiteGraph
 {
-	public BipartiteGraph(bool[,] bipartiteGraphAdjacencyMatrix)
+	public BipartiteGraph(Table<double> bipartiteGraphAdjacencyMatrix)
 	{
-		if (bipartiteGraphAdjacencyMatrix.GetLength(0) != bipartiteGraphAdjacencyMatrix.GetLength(1))
-			throw new Exception("The adjacency matrix must be square");
-		
-		_adjacencyMatrix = new bool[bipartiteGraphAdjacencyMatrix.GetLength(0) * 2 + 2, bipartiteGraphAdjacencyMatrix.GetLength(0) * 2 + 2];
+		_adjacencyMatrix = new bool[bipartiteGraphAdjacencyMatrix.Dimension * 2 + 2, bipartiteGraphAdjacencyMatrix.Dimension * 2 + 2];
 		_edges = new Edge[NumberOfNodes, NumberOfNodes];
 		_transportNetworkAdjacencyLists = new List<List<int>>(NumberOfNodes);
 		_graphAdjacencyLists = new List<List<int>>(NumberOfNodes);
 		
-		_rightPartIndex = bipartiteGraphAdjacencyMatrix.GetLength(0) + 1;
+		_rightPartIndex = bipartiteGraphAdjacencyMatrix.Dimension + 1;
 		_drainIndex = NumberOfNodes - 1;
 		
 		var directedGraphAdjacencyMatrix = CreateAdjacencyMatrix(bipartiteGraphAdjacencyMatrix);
@@ -24,7 +21,7 @@ public class BipartiteGraph
 		CreateAdjacencyLists();
 	}
 
-	private bool[,] CreateAdjacencyMatrix(bool[,] bipartiteGraphAdjacencyMatrix)
+	private bool[,] CreateAdjacencyMatrix(Table<double> bipartiteGraphAdjacencyMatrix)
 	{
 		var directedGraphAdjacencyMatrix = new bool[NumberOfNodes, NumberOfNodes];
 		
@@ -43,9 +40,9 @@ public class BipartiteGraph
 			_adjacencyMatrix[i, SourceIndex] = true;
 			for (var j = _rightPartIndex; j < _drainIndex; j++)
 			{
-				directedGraphAdjacencyMatrix[i, j] = bipartiteGraphAdjacencyMatrix[k, j - _rightPartIndex];
-				_adjacencyMatrix[i, j] = bipartiteGraphAdjacencyMatrix[k, j - _rightPartIndex];
-				_adjacencyMatrix[j, i] = bipartiteGraphAdjacencyMatrix[k, j - _rightPartIndex];
+				directedGraphAdjacencyMatrix[i, j] = !Convert.ToBoolean(bipartiteGraphAdjacencyMatrix.Rows[k][j - _rightPartIndex].Value);
+				_adjacencyMatrix[i, j] = !Convert.ToBoolean(bipartiteGraphAdjacencyMatrix.Rows[k][j - _rightPartIndex].Value);
+				_adjacencyMatrix[j, i] = !Convert.ToBoolean(bipartiteGraphAdjacencyMatrix.Rows[k][j - _rightPartIndex].Value);
 			}
 			k++;
 		}

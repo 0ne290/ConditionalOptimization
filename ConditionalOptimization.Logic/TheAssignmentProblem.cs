@@ -14,7 +14,9 @@ public class TheAssignmentProblem
         
         SubTheMinimumCellFromARow(costTable);
         SubTheMinimumCellFromAColumn(costTable);
-        
+
+        var bipartiteGraph = new BipartiteGraph(costTable);
+
         //return result;
     }
     private void SubTheMinimumCellFromARow(Table<double> table)

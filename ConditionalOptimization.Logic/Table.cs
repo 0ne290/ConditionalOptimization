@@ -6,7 +6,8 @@ public class Table<T> where T : IComparable<T>
     {
         if (sourceArray.GetLength(0) != sourceArray.GetLength(1))
             throw new Exception("The source array must be square");
-        
+
+        Dimension = sourceArray.GetLength(0);
         Rows = new Cell<T>[sourceArray.GetLength(0)][];
         Columns = new Cell<T>[sourceArray.GetLength(0)][];
         
@@ -33,6 +34,7 @@ public class Table<T> where T : IComparable<T>
         }
     }
     
+    public int Dimension { get; }
     public Cell<T>[][] Rows { get; }
     public Cell<T>[][] Columns { get; }
 }
