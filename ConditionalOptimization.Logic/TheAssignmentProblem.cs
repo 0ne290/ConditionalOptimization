@@ -4,16 +4,34 @@ public class TheAssignmentProblem
 {
     public TheAssignmentProblem(double[,] costTable) => CostTable = costTable;
     
-    public TheAssignmentProblemDto HungarianAlgorithm()
+    public void HungarianAlgorithm()//TheAssignmentProblemDto
     {
-        var result = new TheAssignmentProblemDto();
-        result.CostTable = CostTable;
+        //var result = new TheAssignmentProblemDto
+        //{
+        //    CostTable = CostTable
+        //};
         var costTable = new Table<double>(_costTable);
         
         SubTheMinimumCellFromARow(costTable);
         SubTheMinimumCellFromAColumn(costTable);
         
-        return result;
+        foreach (var row in costTable.Rows)
+        {
+            foreach (var cell in row)
+                Console.Write($"{cell.Value} --> ");
+            Console.WriteLine();
+        }
+        
+        Console.WriteLine();
+        
+        foreach (var column in costTable.Columns)
+        {
+            foreach (var cell in column)
+                Console.Write($"{cell.Value} --> ");
+            Console.WriteLine();
+        }
+        
+        //return result;
     }
     private void SubTheMinimumCellFromARow(Table<double> table)
     {
@@ -49,5 +67,5 @@ public class TheAssignmentProblem
         }
     }
 
-    private double[,] _costTable = new double[0,0];
+    private double[,] _costTable = new double[0, 0];
 }

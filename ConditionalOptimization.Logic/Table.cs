@@ -13,17 +13,24 @@ public class Table<T> where T : IComparable<T>
         CreateRows(sourceArray);
         CreateColumns();
     }
+    
     private void CreateRows(T[,] sourceArray)
     {
-        for (int i = 0; i < Rows.Length; i++)
-            for (int j = 0; j < Columns.Length; j++) 
-                Rows[i][j] = new Cell<T>(sourceArray[i,j]);
+        for (var i = 0; i < Rows.Length; i++)
+        {
+            Rows[i] = new Cell<T>[Rows.Length];
+            for (var j = 0; j < Columns.Length; j++)
+                Rows[i][j] = new Cell<T>(sourceArray[i, j]);
+        }
     }
     private void CreateColumns()
     {
-        for (int i = 0; i < Columns.Length; i++)
-            for (int j = 0; j < Rows.Length; j++)
+        for (var i = 0; i < Columns.Length; i++)
+        {
+            Columns[i] = new Cell<T>[Columns.Length];
+            for (var j = 0; j < Rows.Length; j++)
                 Columns[i][j] = Rows[j][i];
+        }
     }
     
     public Cell<T>[][] Rows { get; }
