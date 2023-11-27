@@ -37,6 +37,20 @@ public class Table<T> where T : IComparable<T>
 
     public IList<Cell<T>> GetCellsAtTheIntersectionOfRowsAndColumns(IEnumerable<int> rows, IEnumerable<int> columns)
     {
+        Console.WriteLine();
+        Console.WriteLine();
+        foreach (var row in rows)
+        {
+            Console.Write($"{row} --> ");
+        }
+        Console.WriteLine();
+        foreach (var row in columns)
+        {
+            Console.Write($"{row} --> ");
+        }
+        Console.WriteLine();
+        Console.WriteLine();
+        
         var cells = new List<Cell<T>>(Dimension * Dimension);
         
         cells.AddRange(from row in rows from column in columns select Rows[row][column]);

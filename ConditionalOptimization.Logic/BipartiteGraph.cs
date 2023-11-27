@@ -13,14 +13,14 @@ public class BipartiteGraph
 		_transportNetworkAdjacencyLists = new List<List<int>>(NumberOfNodes);
 		_graphAdjacencyLists = new List<List<int>>(NumberOfNodes);
 		
-		_rightPartIndex = bipartiteGraphAdjacencyMatrix.Dimension + 1;
+		RightPartIndex = bipartiteGraphAdjacencyMatrix.Dimension + 1;
 		_drainIndex = NumberOfNodes - 1;
 
-		_leftNodes = new HashSet<int>(_rightPartIndex - LeftPartIndex);
-		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
+		_leftNodes = new HashSet<int>(RightPartIndex - LeftPartIndex);
+		for (var i = LeftPartIndex; i < RightPartIndex; i++)
 			_leftNodes.Add(i);
-		_rightNodes = new HashSet<int>(_drainIndex - _rightPartIndex);
-		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
+		_rightNodes = new HashSet<int>(_drainIndex - RightPartIndex);
+		for (var i = RightPartIndex; i < _drainIndex; i++)
 			_rightNodes.Add(i);
 		
 		var directedGraphAdjacencyMatrix = CreateAdjacencyMatrix(bipartiteGraphAdjacencyMatrix);
@@ -32,7 +32,7 @@ public class BipartiteGraph
 	{
 		var directedGraphAdjacencyMatrix = new bool[NumberOfNodes, NumberOfNodes];
 		
-		for (var i = _rightPartIndex; i < _drainIndex; i++)
+		for (var i = RightPartIndex; i < _drainIndex; i++)
 		{
 			directedGraphAdjacencyMatrix[i, _drainIndex] = true;
 			_adjacencyMatrix[i, _drainIndex] = true;
@@ -40,16 +40,16 @@ public class BipartiteGraph
 		}
 
 		var k = 0;
-		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
+		for (var i = LeftPartIndex; i < RightPartIndex; i++)
 		{
 			directedGraphAdjacencyMatrix[SourceIndex, i] = true;
 			_adjacencyMatrix[SourceIndex, i] = true;
 			_adjacencyMatrix[i, SourceIndex] = true;
-			for (var j = _rightPartIndex; j < _drainIndex; j++)
+			for (var j = RightPartIndex; j < _drainIndex; j++)
 			{
-				directedGraphAdjacencyMatrix[i, j] = !Convert.ToBoolean(bipartiteGraphAdjacencyMatrix.Rows[k][j - _rightPartIndex].Value);
-				_adjacencyMatrix[i, j] = !Convert.ToBoolean(bipartiteGraphAdjacencyMatrix.Rows[k][j - _rightPartIndex].Value);
-				_adjacencyMatrix[j, i] = !Convert.ToBoolean(bipartiteGraphAdjacencyMatrix.Rows[k][j - _rightPartIndex].Value);
+				directedGraphAdjacencyMatrix[i, j] = !Convert.ToBoolean(bipartiteGraphAdjacencyMatrix.Rows[k][j - RightPartIndex].Value);
+				_adjacencyMatrix[i, j] = !Convert.ToBoolean(bipartiteGraphAdjacencyMatrix.Rows[k][j - RightPartIndex].Value);
+				_adjacencyMatrix[j, i] = !Convert.ToBoolean(bipartiteGraphAdjacencyMatrix.Rows[k][j - RightPartIndex].Value);
 			}
 			k++;
 		}
@@ -178,9 +178,9 @@ public class BipartiteGraph
 	{
 		var edges = new List<int>(NumberOfNodes);
 		
-		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
+		for (var i = LeftPartIndex; i < RightPartIndex; i++)
 		{
-			for (var j = _rightPartIndex; j < _drainIndex; j++)
+			for (var j = RightPartIndex; j < _drainIndex; j++)
 			{
 				if (!GetEdge(j, i).IsBusy() && GetEdge(j, i).IsReverse)
 				{
@@ -213,7 +213,7 @@ public class BipartiteGraph
 		
 		var rightVisitedNodes = new HashSet<int>();
 		
-		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
+		for (var i = LeftPartIndex; i < RightPartIndex; i++)
 		{
 			if (greatestMatching.Contains(i))
 				continue;
@@ -221,34 +221,33 @@ public class BipartiteGraph
 			foreach (var node in searchRoute)
 			{
 				leftUnvisitedNodes.Remove(node);
-				if (node >= _rightPartIndex)
+				if (node >= RightPartIndex)
 					rightVisitedNodes.Add(node);
 			}
 		}
 		
 		RestoreEdges();
 		
-		minimumVertexCover.Add("leftNodes", new List<int>(leftUnvisitedNodes));
-		minimumVertexCover.Add("rightNodes", new List<int>(rightVisitedNodes));
+		minimumVertexCover.Add("leftNodes", leftUnvisitedNodes);
+		minimumVertexCover.Add("rightNodes", rightVisitedNodes);
 		
 		return minimumVertexCover;
 	}
 	
 	private Edge GetEdge(int startingNode, int endNode) => _edges[startingNode, endNode];
 
-	public ISet<int> LeftNodes => new HashSet<int>(_leftNodes);
-	public ISet<int> RightNodes => new HashSet<int>(_rightNodes);
+	public ICollection<int> LeftNodes => new HashSet<int>(_leftNodes);
+	public ICollection<int> RightNodes => new HashSet<int>(_rightNodes);
+	public int RightPartIndex { get; }
+	public static int LeftPartIndex { get; } = 1;
 	private int NumberOfNodes => _adjacencyMatrix.GetLength(0);
 
 	private readonly bool[,] _adjacencyMatrix;
 	private readonly List<List<int>> _transportNetworkAdjacencyLists;
 	private readonly List<List<int>> _graphAdjacencyLists;
 	private readonly Edge[,] _edges;
-
-	private readonly int _rightPartIndex;
-	private readonly ISet<int> _leftNodes;
-	private readonly ISet<int> _rightNodes;
+	private readonly ICollection<int> _leftNodes;
+	private readonly ICollection<int> _rightNodes;
 	private readonly int _drainIndex;
-	private const int LeftPartIndex = 1;
 	private const int SourceIndex = 0;
 }
