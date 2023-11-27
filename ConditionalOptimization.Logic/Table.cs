@@ -24,6 +24,7 @@ public class Table<T> where T : IComparable<T>
                 Rows[i][j] = new Cell<T>(sourceArray[i, j]);
         }
     }
+    
     private void CreateColumns()
     {
         for (var i = 0; i < Columns.Length; i++)
@@ -32,6 +33,15 @@ public class Table<T> where T : IComparable<T>
             for (var j = 0; j < Rows.Length; j++)
                 Columns[i][j] = Rows[j][i];
         }
+    }
+
+    public IList<Cell<T>> GetCellsAtTheIntersectionOfRowsAndColumns(IEnumerable<int> rows, IEnumerable<int> columns)
+    {
+        var cells = new List<Cell<T>>(Dimension * Dimension);
+        
+        cells.AddRange(from row in rows from column in columns select Rows[row][column]);
+
+        return cells;
     }
     
     public int Dimension { get; }

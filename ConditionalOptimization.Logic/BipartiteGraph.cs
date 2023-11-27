@@ -15,6 +15,13 @@ public class BipartiteGraph
 		
 		_rightPartIndex = bipartiteGraphAdjacencyMatrix.Dimension + 1;
 		_drainIndex = NumberOfNodes - 1;
+
+		_leftNodes = new HashSet<int>(_rightPartIndex - LeftPartIndex);
+		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
+			_leftNodes.Add(i);
+		_rightNodes = new HashSet<int>(_drainIndex - _rightPartIndex);
+		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
+			_rightNodes.Add(i);
 		
 		var directedGraphAdjacencyMatrix = CreateAdjacencyMatrix(bipartiteGraphAdjacencyMatrix);
 		CreateEdges(directedGraphAdjacencyMatrix);
@@ -193,7 +200,7 @@ public class BipartiteGraph
 				GetEdge(i, j).ResetСapacity();
 	}
 
-	public ICollection<int> SearchMinimumVertexCover(IList<int> greatestMatching)
+	public IDictionary<string, ICollection<int>> SearchMinimumVertexCover(IList<int> greatestMatching)
 	{
 		for (var i = 0; i < greatestMatching.Count; i += 2)
 		{
@@ -201,10 +208,8 @@ public class BipartiteGraph
 			GetEdge(greatestMatching[i + 1], greatestMatching[i]).ReceiveFlow(1);
 		}
 
-		var leftUnvisitedNodes = new HashSet<int>(_rightPartIndex - LeftPartIndex);
-		var minimumVertexCover = leftUnvisitedNodes;
-		for (var i = LeftPartIndex; i < _rightPartIndex; i++)
-			leftUnvisitedNodes.Add(i);
+		var leftUnvisitedNodes = LeftNodes;
+		var minimumVertexCover = new Dictionary<string, ICollection<int>>();
 		
 		var rightVisitedNodes = new HashSet<int>();
 		
@@ -223,12 +228,16 @@ public class BipartiteGraph
 		
 		RestoreEdges();
 		
-		leftUnvisitedNodes.UnionWith(rightVisitedNodes);
+		minimumVertexCover.Add("leftNodes", new List<int>(leftUnvisitedNodes));
+		minimumVertexCover.Add("rightNodes", new List<int>(rightVisitedNodes));
+		
 		return minimumVertexCover;
 	}
 	
 	private Edge GetEdge(int startingNode, int endNode) => _edges[startingNode, endNode];
 
+	public ISet<int> LeftNodes => new HashSet<int>(_leftNodes);
+	public ISet<int> RightNodes => new HashSet<int>(_rightNodes);
 	private int NumberOfNodes => _adjacencyMatrix.GetLength(0);
 
 	private readonly bool[,] _adjacencyMatrix;
@@ -237,6 +246,8 @@ public class BipartiteGraph
 	private readonly Edge[,] _edges;
 
 	private readonly int _rightPartIndex;
+	private readonly ISet<int> _leftNodes;
+	private readonly ISet<int> _rightNodes;
 	private readonly int _drainIndex;
 	private const int LeftPartIndex = 1;
 	private const int SourceIndex = 0;

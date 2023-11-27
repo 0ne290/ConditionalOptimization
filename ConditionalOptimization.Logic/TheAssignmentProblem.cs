@@ -1,5 +1,7 @@
 namespace ConditionalOptimization.Logic;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 public class TheAssignmentProblem
 {
     public TheAssignmentProblem(double[,] costTable) => CostTable = costTable;
@@ -15,10 +17,20 @@ public class TheAssignmentProblem
         SubTheMinimumCellFromARow(costTable);
         SubTheMinimumCellFromAColumn(costTable);
 
-        var bipartiteGraph = new BipartiteGraph(costTable);
+        _bipartiteGraph = new BipartiteGraph(costTable);
+        var greatestMatching = _bipartiteGraph.FordFulkersonAlgorithm();
+
+        while (greatestMatching.Count < costTable.Dimension)
+        {
+            var minimumVertexCover = _bipartiteGraph.SearchMinimumVertexCover(greatestMatching);
+            AlphaConversion(costTable, minimumVertexCover);
+            _bipartiteGraph = new BipartiteGraph(costTable);
+            greatestMatching = _bipartiteGraph.FordFulkersonAlgorithm();
+        }
 
         //return result;
     }
+    
     private void SubTheMinimumCellFromARow(Table<double> table)
     {
         foreach (var row in table.Rows)
@@ -31,6 +43,7 @@ public class TheAssignmentProblem
                 cell.Value -= rowMinimum;
         }
     }
+    
     private void SubTheMinimumCellFromAColumn(Table<double> table)
     {
         foreach (var column in table.Columns)
@@ -44,6 +57,29 @@ public class TheAssignmentProblem
         }
     }
 
+    private void AlphaConversion(Table<double> costTable, IDictionary<string, ICollection<int>> minimumVertexCover)
+    {
+        var rows = minimumVertexCover["leftNodes"];
+        var columns = _bipartiteGraph.RightNodes;
+        columns.ExceptWith(minimumVertexCover["rightNodes"]);
+        
+        var cells = costTable.GetCellsAtTheIntersectionOfRowsAndColumns(rows, columns);
+        
+        var minimumCell = cells.Min();
+        if (minimumCell == null)
+            throw new ArgumentNullException(nameof(minimumCell));
+        var minimum = minimumCell.Value;
+        
+        foreach (var row in rows)
+            foreach (var cell in costTable.Rows[row])
+                cell.Value -= minimum;
+
+        columns = (ICollection<int>)minimumVertexCover["rightNodes"];
+        foreach (var column in columns)
+            foreach (var cell in costTable.Columns[column])
+                cell.Value -= minimum;
+    }
+
     public double[,] CostTable
     {
         get => (double[,])_costTable.Clone();
@@ -55,5 +91,6 @@ public class TheAssignmentProblem
         }
     }
 
-    private double[,] _costTable = new double[0, 0];
+    private double[,] _costTable;
+    private BipartiteGraph _bipartiteGraph;
 }
