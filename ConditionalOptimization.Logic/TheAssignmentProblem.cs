@@ -23,15 +23,8 @@ public class TheAssignmentProblem
         while (greatestMatching.Count / 2 < costTable.Dimension)
         {
             var minimumVertexCover = _bipartiteGraph.SearchMinimumVertexCover(greatestMatching);
-            AlphaConversion(costTable, minimumVertexCover);
-            //Console.WriteLine();
-            //foreach (var row in costTable.Rows)
-            //{
-            //    foreach (var cell in row)
-            //        Console.Write($"{cell.Value} --> ");
-            //    Console.WriteLine();
-            //}
-            //Console.WriteLine();
+            var graphExceptMinimumVertexCover = GraphExceptMinimumVertexCover(minimumVertexCover);
+            AlphaConversion(costTable, graphExceptMinimumVertexCover);
             _bipartiteGraph = new BipartiteGraph(costTable);
             greatestMatching = _bipartiteGraph.FordFulkersonAlgorithm();
         }
@@ -42,7 +35,7 @@ public class TheAssignmentProblem
         //return result;
     }
     
-    private void SubTheMinimumCellFromARow(Table<double> table)
+    private static void SubTheMinimumCellFromARow(Table<double> table)
     {
         foreach (var row in table.Rows)
         {
@@ -55,7 +48,7 @@ public class TheAssignmentProblem
         }
     }
     
-    private void SubTheMinimumCellFromAColumn(Table<double> table)
+    private static void SubTheMinimumCellFromAColumn(Table<double> table)
     {
         foreach (var column in table.Columns)
         {
@@ -68,12 +61,24 @@ public class TheAssignmentProblem
         }
     }
 
-    private void AlphaConversion(Table<double> costTable, IDictionary<string, ICollection<int>> minimumVertexCover)
+    private IDictionary<string, ISet<int>> GraphExceptMinimumVertexCover(IDictionary<string, ISet<int>> minimumVertexCover)
     {
-        var selectedRows = minimumVertexCover["leftNodes"].ToArray();
-        var rightNodes = (ISet<int>)_bipartiteGraph.RightNodes;
-        rightNodes.ExceptWith(minimumVertexCover["rightNodes"]);
-        var selectedColumns = rightNodes.ToArray();
+        var graphExceptMinimumVertexCover = new Dictionary<string, ISet<int>>
+        {
+            { "leftNodes", _bipartiteGraph.LeftNodes },
+            { "rightNodes", _bipartiteGraph.RightNodes }
+        };
+
+        graphExceptMinimumVertexCover["leftNodes"].ExceptWith(minimumVertexCover["leftNodes"]);
+        graphExceptMinimumVertexCover["rightNodes"].ExceptWith(minimumVertexCover["rightNodes"]);
+
+        return graphExceptMinimumVertexCover;
+    }
+
+    private void AlphaConversion(Table<double> costTable, IDictionary<string, ISet<int>> graphExceptMinimumVertexCover)
+    {
+        var selectedRows = graphExceptMinimumVertexCover["leftNodes"].ToArray();
+        var selectedColumns = graphExceptMinimumVertexCover["rightNodes"].ToArray();
 
         for (var i = 0; i < selectedRows.Length; i++)
             selectedRows[i] -= BipartiteGraph.LeftPartIndex;
@@ -82,44 +87,20 @@ public class TheAssignmentProblem
         
         var cells = costTable.GetCellsAtTheIntersectionOfRowsAndColumns(selectedRows, selectedColumns);
         
-        var minimumCell = cells.Min();
-        if (minimumCell == null)
-            throw new ArgumentNullException(nameof(minimumCell));
-        var minimum = minimumCell.Value;
-        Console.WriteLine(minimum);
+        var alphaCell = cells.Min();
+        if (alphaCell == null)
+            throw new ArgumentNullException(nameof(alphaCell));
+        var alpha = alphaCell.Value;
         
         foreach (var row in selectedRows)
-        {
             foreach (var cell in costTable.Rows[row])
-            {
-                //Console.WriteLine(cell.Value);
-                cell.Value -= minimum;
-                //Console.WriteLine(cell.Value);
-            }
-        }
+                cell.Value -= alpha;
         
-        //Console.WriteLine();
-        //foreach (var row in costTable.Rows)
-        //{
-        //    foreach (var cell in row)
-        //        Console.Write($"{cell.Value} --> ");
-        //    Console.WriteLine();
-        //}
-        //Console.WriteLine();
-
-        var unselectedColumns = minimumVertexCover["rightNodes"];
+        var unselectedColumns = _bipartiteGraph.RightNodes;
+        unselectedColumns.ExceptWith(graphExceptMinimumVertexCover["rightNodes"]);
         foreach (var column in unselectedColumns)
             foreach (var cell in costTable.Columns[column - _bipartiteGraph.RightPartIndex])
-                cell.Value += minimum;
-        
-        //Console.WriteLine();
-        //foreach (var row in costTable.Rows)
-        //{
-        //    foreach (var cell in row)
-        //        Console.Write($"{cell.Value} --> ");
-        //    Console.WriteLine();
-        //}
-        //Console.WriteLine();
+                cell.Value += alpha;
     }
 
     public double[,] CostTable

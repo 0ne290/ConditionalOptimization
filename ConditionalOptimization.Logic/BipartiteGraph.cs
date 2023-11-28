@@ -10,16 +10,16 @@ public class BipartiteGraph
 	{
 		_adjacencyMatrix = new bool[bipartiteGraphAdjacencyMatrix.Dimension * 2 + 2, bipartiteGraphAdjacencyMatrix.Dimension * 2 + 2];
 		_edges = new Edge[NumberOfNodes, NumberOfNodes];
-		_transportNetworkAdjacencyLists = new List<List<int>>(NumberOfNodes);
-		_graphAdjacencyLists = new List<List<int>>(NumberOfNodes);
+		_transportNetworkAdjacencyLists = new List<IList<int>>();
+		_graphAdjacencyLists = new List<IList<int>>();
 		
 		RightPartIndex = bipartiteGraphAdjacencyMatrix.Dimension + 1;
 		_drainIndex = NumberOfNodes - 1;
 
-		_leftNodes = new HashSet<int>(RightPartIndex - LeftPartIndex);
+		_leftNodes = new HashSet<int>();
 		for (var i = LeftPartIndex; i < RightPartIndex; i++)
 			_leftNodes.Add(i);
-		_rightNodes = new HashSet<int>(_drainIndex - RightPartIndex);
+		_rightNodes = new HashSet<int>();
 		for (var i = RightPartIndex; i < _drainIndex; i++)
 			_rightNodes.Add(i);
 		
@@ -78,18 +78,16 @@ public class BipartiteGraph
 	{
 		for (var i = 0; i < NumberOfNodes; i++)
 		{
-			_transportNetworkAdjacencyLists.Add(new List<int>(NumberOfNodes));
-			_graphAdjacencyLists.Add(new List<int>(NumberOfNodes));
+			_transportNetworkAdjacencyLists.Add(new List<int>());
+			_graphAdjacencyLists.Add(new List<int>());
 			for (var j = 0; j < NumberOfNodes; j++)
 			{
-				if (_adjacencyMatrix[i, j])
-				{
-					_transportNetworkAdjacencyLists[i].Add(j);
-					if (j != 0 && j != NumberOfNodes - 1)
-						_graphAdjacencyLists[i].Add(j);
-				}
+				if (!_adjacencyMatrix[i, j])
+					continue;
+				_transportNetworkAdjacencyLists[i].Add(j);
+				if (j != 0 && j != NumberOfNodes - 1)
+					_graphAdjacencyLists[i].Add(j);
 			}
-			_transportNetworkAdjacencyLists[i].TrimExcess();
 		}
 		
 		_graphAdjacencyLists[0] = new List<int>(0);
@@ -98,7 +96,7 @@ public class BipartiteGraph
 	
 	public IList<int> FordFulkersonAlgorithm()
 	{
-		var path = FindPathToNode(0, NumberOfNodes - 1, new NodeStack(NumberOfNodes));
+		var path = FindPathToNode(0, NumberOfNodes - 1, new NodeStack());
 		while (path.Count > 1)
 		{
 			for (var i = 0; i < path.Count - 1; i++)
@@ -106,7 +104,7 @@ public class BipartiteGraph
 				GetEdge(path[i], path[i + 1]).SendFlow(1);
 				GetEdge(path[i + 1], path[i]).ReceiveFlow(1);
 			}
-			path = FindPathToNode(0, NumberOfNodes - 1, new NodeStack(NumberOfNodes));
+			path = FindPathToNode(0, NumberOfNodes - 1, new NodeStack());
 		}
 		
 		var greatestMatching = GetReverseFreeEdges();
@@ -117,7 +115,7 @@ public class BipartiteGraph
 	
 	private IList<int> FindPathToNode(int startNode, int targetNode, INodeStorage nodesStorage)
 	{
-		var path = new List<int>(NumberOfNodes);
+		var path = new List<int>();
 		
 		var searchRoute = NodeSearch(startNode, targetNode, _transportNetworkAdjacencyLists, nodesStorage);
 		if (searchRoute[^1] != targetNode)
@@ -140,13 +138,13 @@ public class BipartiteGraph
 		return path;
 	}
 	
-	private IList<int> NodeSearch(int startNode, int targetNode, IReadOnlyList<IReadOnlyList<int>> adjacencyLists, INodeStorage nodesStorage)
+	private IList<int> NodeSearch(int startNode, int targetNode, IList<IList<int>> adjacencyLists, INodeStorage nodesStorage)
 	{
 		var visited = new bool[NumberOfNodes];
 		
 		nodesStorage.Insert(startNode);
 		
-		var visitedNodes = new List<int>(NumberOfNodes);
+		var visitedNodes = new List<int>();
 		
 		while (!nodesStorage.IsEmpty())
 		{
@@ -176,7 +174,7 @@ public class BipartiteGraph
 	
 	private IList<int> GetReverseFreeEdges()
 	{
-		var edges = new List<int>(NumberOfNodes);
+		var edges = new List<int>();
 		
 		for (var i = LeftPartIndex; i < RightPartIndex; i++)
 		{
@@ -200,7 +198,7 @@ public class BipartiteGraph
 				GetEdge(i, j).ResetСapacity();
 	}
 
-	public IDictionary<string, ICollection<int>> SearchMinimumVertexCover(IList<int> greatestMatching)
+	public IDictionary<string, ISet<int>> SearchMinimumVertexCover(IList<int> greatestMatching)
 	{
 		for (var i = 0; i < greatestMatching.Count; i += 2)
 		{
@@ -209,7 +207,7 @@ public class BipartiteGraph
 		}
 
 		var leftUnvisitedNodes = LeftNodes;
-		var minimumVertexCover = new Dictionary<string, ICollection<int>>();
+		var minimumVertexCover = new Dictionary<string, ISet<int>>();
 		
 		var rightVisitedNodes = new HashSet<int>();
 		
@@ -217,7 +215,7 @@ public class BipartiteGraph
 		{
 			if (greatestMatching.Contains(i))
 				continue;
-			var searchRoute = NodeSearch(i, -1, _graphAdjacencyLists, new NodeStack(NumberOfNodes));
+			var searchRoute = NodeSearch(i, -1, _graphAdjacencyLists, new NodeStack());
 			foreach (var node in searchRoute)
 			{
 				leftUnvisitedNodes.Remove(node);
@@ -235,19 +233,19 @@ public class BipartiteGraph
 	}
 	
 	private Edge GetEdge(int startingNode, int endNode) => _edges[startingNode, endNode];
-
-	public ICollection<int> LeftNodes => new HashSet<int>(_leftNodes);
-	public ICollection<int> RightNodes => new HashSet<int>(_rightNodes);
+	
+	public ISet<int> LeftNodes => new HashSet<int>(_leftNodes);
+	public ISet<int> RightNodes => new HashSet<int>(_rightNodes);
 	public int RightPartIndex { get; }
-	public static int LeftPartIndex { get; } = 1;
+	public static int LeftPartIndex => 1;
 	private int NumberOfNodes => _adjacencyMatrix.GetLength(0);
 
 	private readonly bool[,] _adjacencyMatrix;
-	private readonly List<List<int>> _transportNetworkAdjacencyLists;
-	private readonly List<List<int>> _graphAdjacencyLists;
+	private readonly IList<IList<int>> _transportNetworkAdjacencyLists;
+	private readonly IList<IList<int>> _graphAdjacencyLists;
 	private readonly Edge[,] _edges;
-	private readonly ICollection<int> _leftNodes;
-	private readonly ICollection<int> _rightNodes;
+	private readonly ISet<int> _leftNodes;
+	private readonly ISet<int> _rightNodes;
 	private readonly int _drainIndex;
 	private const int SourceIndex = 0;
 }
