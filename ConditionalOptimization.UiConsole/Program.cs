@@ -41,7 +41,7 @@ internal static class Program
         //foreach (var node in minimumVertexCover)
 	    //    Console.Write($"{node} --> ");
 
-	    var costTable = new double[,]
+	    var originalCostTable = new double[,]
 	    {
 		    { 1, 4, 6, 3 },
 		    { 9, 7, 10, 9 },
@@ -49,8 +49,32 @@ internal static class Program
 		    { 8, 7, 8, 5 }
 	    };
 	    
-	    var theAssignmentProblem = new TheAssignmentProblem(costTable);
-	    theAssignmentProblem.HungarianAlgorithm();
+	    var theAssignmentProblem = new TheAssignmentProblem(originalCostTable);
+	    var theAssignmentProblemDto = theAssignmentProblem.HungarianAlgorithm();
+
+	    var dimension = theAssignmentProblemDto.CostTable.GetLength(0);
+	    var resultCostTable = theAssignmentProblemDto.CostTable;
+	    Console.WriteLine("Матрица стоимостей:");
+	    for (var i = 0; i < dimension; i++)
+	    {
+		    for (var j = 0; j < dimension; j++)
+			    Console.Write($"{resultCostTable[i, j]} ");
+		    Console.WriteLine();
+	    }
+	    
+	    Console.WriteLine();
+	    Console.WriteLine($"Стоимость самой выгодной совокупности назначений равна {theAssignmentProblemDto.MinimumCost}");
+	    Console.WriteLine();
+
+	    dimension = theAssignmentProblemDto.AssignmentTable.GetLength(0);
+	    var assignmentTable = theAssignmentProblemDto.AssignmentTable;
+	    Console.WriteLine("Матрица назначений:");
+	    for (var i = 0; i < dimension; i++)
+	    {
+		    for (var j = 0; j < dimension; j++)
+			    Console.Write($"{assignmentTable[i, j]} ");
+		    Console.WriteLine();
+	    }
 
         Console.WriteLine();
 		Console.Write("Для завершения программы нажмите любую клавишу...");

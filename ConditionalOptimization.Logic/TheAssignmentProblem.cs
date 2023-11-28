@@ -6,12 +6,8 @@ public class TheAssignmentProblem
 {
     public TheAssignmentProblem(double[,] costTable) => CostTable = costTable;
     
-    public void HungarianAlgorithm()//TheAssignmentProblemDto
+    public TheAssignmentProblemDto HungarianAlgorithm()
     {
-        //var result = new TheAssignmentProblemDto
-        //{
-        //    CostTable = CostTable
-        //};
         var costTable = new Table<double>(_costTable);
         
         SubTheMinimumCellFromARow(costTable);
@@ -28,11 +24,19 @@ public class TheAssignmentProblem
             _bipartiteGraph = new BipartiteGraph(costTable);
             greatestMatching = _bipartiteGraph.FordFulkersonAlgorithm();
         }
-        
-        foreach (var node in greatestMatching)
-            Console.Write($"{node} --> ");
 
-        //return result;
+        var assignmentTable = new bool[costTable.Dimension, costTable.Dimension];
+        double minimumCost = 0;
+        for (var i = 0; i < assignmentTable.GetLength(0); i++)
+        {
+            var columnIndex = greatestMatching[i * 2 + 1] - _bipartiteGraph.RightPartIndex;
+            minimumCost += _costTable[i, columnIndex];
+            assignmentTable[i, columnIndex] = true;
+        }
+
+        var result = new TheAssignmentProblemDto(assignmentTable, CostTable, minimumCost);
+
+        return result;
     }
     
     private static void SubTheMinimumCellFromARow(Table<double> table)
@@ -103,10 +107,10 @@ public class TheAssignmentProblem
                 cell.Value += alpha;
     }
 
-    public double[,] CostTable
+    private double[,] CostTable
     {
         get => (double[,])_costTable.Clone();
-        set
+        init
         {
             if (value.GetLength(0) != value.GetLength(1))
                 throw new Exception("The cost array must be square");
@@ -114,6 +118,6 @@ public class TheAssignmentProblem
         }
     }
 
-    private double[,] _costTable;
+    private readonly double[,] _costTable;
     private BipartiteGraph _bipartiteGraph;
 }
