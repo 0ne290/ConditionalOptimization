@@ -8,6 +8,7 @@ public class TheAssignmentProblem
     
     public TheAssignmentProblemDto HungarianAlgorithm()
     {
+        var logger = new Logger();
         var costTable = new Table<double>(_costTable);
         
         SubTheMinimumCellFromARow(costTable);
@@ -15,6 +16,8 @@ public class TheAssignmentProblem
 
         _bipartiteGraph = new BipartiteGraph(costTable);
         var greatestMatching = _bipartiteGraph.FordFulkersonAlgorithm();
+        logger.AddTable(costTable);
+        logger.AddMatching(greatestMatching);
 
         while (greatestMatching.Count / 2 < costTable.Dimension)
         {
@@ -23,6 +26,8 @@ public class TheAssignmentProblem
             AlphaConversion(costTable, graphExceptMinimumVertexCover);
             _bipartiteGraph = new BipartiteGraph(costTable);
             greatestMatching = _bipartiteGraph.FordFulkersonAlgorithm();
+            logger.AddTable(costTable);
+            logger.AddMatching(greatestMatching);
         }
 
         var assignmentTable = new bool[costTable.Dimension, costTable.Dimension];
@@ -36,6 +41,8 @@ public class TheAssignmentProblem
 
         var result = new TheAssignmentProblemDto(assignmentTable, CostTable, minimumCost);
 
+        logger.Dispose();
+        
         return result;
     }
     
