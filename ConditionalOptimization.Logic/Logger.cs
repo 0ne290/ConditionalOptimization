@@ -22,11 +22,12 @@ public class Logger : IDisposable
 
     private void TablesListener()
     {
+        var iteration = 0;
         while (_isOn || !_tables.IsEmpty)
         {
             if (_tables.TryDequeue(out var table))
             {
-                var data = new StringBuilder();
+                var data = new StringBuilder($"Таблица стоимостей на {iteration} итерации:\n");
 
                 for (var i = 0; i < table.Dimension; i++)
                 {
@@ -36,6 +37,8 @@ public class Logger : IDisposable
                 }
                 
                 Console.WriteLine(data);
+
+                iteration++;
             }
             else
                 Thread.Sleep(0);
@@ -44,16 +47,19 @@ public class Logger : IDisposable
     
     private void MatchingsListener()
     {
+        var iteration = 0;
         while (_isOn || !_matchings.IsEmpty)
         {
             if (_matchings.TryDequeue(out var matching))
             {
-                var data = new StringBuilder();
+                var data = new StringBuilder($"Наибольшее паросочетание на {iteration} итерации:\n");
         
-                foreach (var node in matching) 
-                    data.Append($"{node} -->\n");
+                for (var i = 0; i < matching.Count; i += 2) 
+                    data.Append($"{matching[i]} --> {matching[i + 1]}\n");
                 
                 Console.WriteLine(data);
+
+                iteration++;
             }
             else
                 Thread.Sleep(0);
