@@ -5,49 +5,30 @@ namespace ConditionalOptimization.UiConsole;
 internal static class Program
 {
 	private static void Main()
-    {
-	    //var adjacencyMatrix = new[,]
-	    //{
-	    //	{ true, false, false },
-	    //	{ true, true, true },
-	    //	{ false, true, false }
-	    //};
-	    
-		//var adjacencyMatrix = new[]
-		//{
-		//	new[] { true, true, true, true },
-		//	new[] { false, true, true, true },
-		//	new[] { false, false, true, true },
-		//	new[] { true, true, false, false }
-		//};
+	{
+		Console.WriteLine("Корректность вводимой матрицы в файле \"CostTable.txt\" зависит только от Вас - программа не проверяет правильность вводимой матрицы. Если Вы нарушите первое правило, то программа вернет какое-нибудь стандартное исключение (скорее всего что-то типа \"Index out of range\"). Если второе - \"Capacity cannot be less than zero\".");
+		Console.WriteLine();
+		Console.WriteLine("Правило №1: кол-во эл-ов в строках и кол-во самих строк не должно быть меньше введенной размерности;");
+        Console.WriteLine("Правило №2: кол-во эл-ов в строках и кол-во самих строк не должно быть больше введенной размерности;");
+        Console.WriteLine("Правило №3: разделителем между эл-ами строки должен быть один пробел.");
+        Console.WriteLine();
 		
-		//var adjacencyMatrix = new[,]
-		//{
-		//	{ false, true, false, false, false, false, false },
-		//	{ true, true, true, true, true, false, false },
-		//	{ false, true, false, true, false, true, false },
-		//	{ false, false, true, false, true, false, true },
-		//	{ false, false, true, false, true, false, true },
-		//	{ false, false, false, true, false, true, false },
-		//	{ false, true, false, false, false, true, false }
-		//};
-
-        //var bipartiteGraph = new BipartiteGraph(adjacencyMatrix);
-        //
-        //var greatestMatching = bipartiteGraph.FordFulkersonAlgorithm();
-        //var minimumVertexCover = bipartiteGraph.SearchMinimumVertexCover(greatestMatching);
-        //Console.WriteLine();
-        //Console.WriteLine();
-        //foreach (var node in minimumVertexCover)
-	    //    Console.Write($"{node} --> ");
-
-	    var originalCostTable = new double[,]
-	    {
-		    { 1, 4, 6, 3 },
-		    { 9, 7, 10, 9 },
-		    { 4, 5, 11, 7 },
-		    { 8, 7, 8, 5 }
-	    };
+		Console.Write("Введите размерность матрицы, прописанной в файле \"CostTable.txt\" (если введете число меньше 2, то будет взята стандартная таблица из варианта 32 контрольной работы): ");
+		var dimensionOriginal = Convert.ToInt32(Console.ReadLine());
+		Console.WriteLine();
+		double[,] originalCostTable;
+		if (dimensionOriginal < 2)
+		{
+			originalCostTable = new double[,]
+			{
+				{ 1, 4, 6, 3 },
+				{ 9, 7, 10, 9 },
+				{ 4, 5, 11, 7 },
+				{ 8, 7, 8, 5 }
+			};
+		}
+		else
+			originalCostTable = MatrixReaderFromFle.LoadMatrix("CostTable.txt", dimensionOriginal).Result;
 	    
 	    var theAssignmentProblem = new TheAssignmentProblem(originalCostTable);
 	    var theAssignmentProblemDto = theAssignmentProblem.HungarianAlgorithm();
