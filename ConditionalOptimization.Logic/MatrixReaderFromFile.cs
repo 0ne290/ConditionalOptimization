@@ -1,6 +1,6 @@
 namespace ConditionalOptimization.Logic;
 
-public static class MatrixReaderFromFle
+public static class MatrixReaderFromFile
 {
     public static async Task<double[,]> LoadMatrix(string pathToFileMatrix, int dimension)
     {
