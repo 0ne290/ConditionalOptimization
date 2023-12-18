@@ -9,6 +9,9 @@ public class SystemOfNonlinearEquations
 		if (jacobianMatrix.GetLength(1) != _vectorFunction.Length)
 			throw new Exception("The number of columns of the Jacobian matrix must be equal to the dimension of the vector function");
 
+		if (ComputeDeterminantMatrix(CalculateJacobianMatrix(jacobianMatrix, initialApproximation)) == 0)
+			throw new Exception("With the initial approximation introduced, the Jacobi matrix has a zero determinant. Enter a different initial guess");
+		
 		double[] approximation = initialApproximation, lastApproximation;
 		do
 		{
@@ -19,6 +22,50 @@ public class SystemOfNonlinearEquations
 		} while (!AccuracyAchieved(approximation, lastApproximation, accuracy));
 
 		return approximation;
+	}
+	
+	private static void SwapRows(int rowNumber1, int rowNumber2, double[,] matrix)
+	{
+		for (var i = 0; i < matrix.GetLength(0); i++)
+			(matrix[rowNumber1, i], matrix[rowNumber2, i]) = (matrix[rowNumber2, i], matrix[rowNumber1, i]);
+	}
+	
+	private static double ComputeDeterminantMatrix(double[,] matrix)
+	{
+		double det = 1;
+		const double eps = 1E-9;
+		
+		for (var i = 0; i < matrix.GetLength(0); i++) 
+		{
+			var k = i;
+			
+			for (var j = i + 1; j < matrix.GetLength(0); j++)
+				if (Math.Abs(matrix[j, i]) > Math.Abs(matrix[k, i]))
+					k = j;
+			
+			if (Math.Abs(matrix[k, i]) < eps) 
+			{
+				det = 0;
+				break;
+			}
+
+			SwapRows(i, k, matrix);
+			
+			if (i != k)
+				det = -det;
+			
+			det *= matrix[i, i];
+			
+			for (var j = i + 1; j < matrix.GetLength(0); j++)
+				matrix[i, j] /= matrix[i, i];
+			
+			for (var j = 0; j < matrix.GetLength(0); j++)
+				if (j != i && Math.Abs(matrix[j, i]) > eps)
+					for (k = i + 1; k < matrix.GetLength(0); k++)
+						matrix[j, k] -= matrix[i, k] * matrix[j, i];
+		}
+
+		return det;
 	}
 
 	private static double[] MatrixMultipliedByVector(double[,] matrix, IReadOnlyList<double> vector)
