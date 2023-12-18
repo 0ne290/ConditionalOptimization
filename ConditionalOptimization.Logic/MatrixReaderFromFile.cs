@@ -2,14 +2,20 @@ namespace ConditionalOptimization.Logic;
 
 public static class MatrixReaderFromFile
 {
-    public static async Task<double[,]> LoadMatrix(string pathToFileMatrix, int dimension)
+    public static async Task<double[,]> LoadMatrix(string pathToFileMatrix)
     {
         var rowIndex = 0;
-        var matrix = new double[dimension, dimension];
         using var streamReader = File.OpenText(pathToFileMatrix);
- 	
-        await foreach (var row in LoadRow(streamReader))
+
+        var rows = await LoadRow(streamReader);
+        var dimension = rows.Count;
+        var matrix = new double[dimension, dimension];
+        
+        foreach (var row in rows)
         {
+            if (row.Count != dimension)
+                throw new Exception("The cost table must be square.");
+            
             var columnIndex = 0;
             foreach (var element in row)
                 matrix[rowIndex, columnIndex++] = element;
