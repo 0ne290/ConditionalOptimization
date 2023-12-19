@@ -43,7 +43,7 @@ internal static class Program
 			};
 		}
 		else
-			originalCostTable = MatrixReaderFromFile.LoadMatrix("CostTable.txt", dimensionOriginal).Result;
+			originalCostTable = MatrixReaderFromFile.LoadMatrix("CostTable.txt");
 	    
 	    var theAssignmentProblem = new TheAssignmentProblem(originalCostTable);
 	    var theAssignmentProblemDto = theAssignmentProblem.HungarianAlgorithm();

@@ -7,15 +7,15 @@ public static class MatrixReaderFromFile
         var rowIndex = 0;
         var rows = File.ReadAllLines(pathToFileMatrix);
 
-        var dimension = rows.Count;
+        var dimension = rows.Length;
         var matrix = new double[dimension, dimension];
         
         foreach (var row in rows)
         {
             var numbers = row.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                    .Select(double.Parse);
+                    .Select(double.Parse).ToArray();
             
-            if (numbers.Count != dimension)
+            if (numbers.Length != dimension)
                 throw new Exception("The cost table must be square.");
             
             var columnIndex = 0;
