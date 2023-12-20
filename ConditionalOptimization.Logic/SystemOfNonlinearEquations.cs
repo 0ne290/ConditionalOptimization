@@ -2,24 +2,37 @@ namespace ConditionalOptimization.Logic;
 
 public class SystemOfNonlinearEquations
 {
-    public SystemOfNonlinearEquations(Func<double[], double>[] vectorFunction) => _vectorFunction = vectorFunction;
+    public SystemOfNonlinearEquations(Func<double[], double>[] vectorFunction, Func<double[], double>[,] jacobianMatrix, double[] initialApproximation, double accuracy, Func<double[], double> limitFunction, string limitFunctionString, Func<double[], double> targetFunction, string targetFunctionString)
+    {
+	    _vectorFunction = vectorFunction;
+	    _jacobianMatrix = jacobianMatrix;
+	    _initialApproximation = initialApproximation;
+	    _accuracy = accuracy;
+	    LimitFunction = limitFunction;
+	    LimitFunctionString = limitFunctionString;
+	    TargetFunction = targetFunction;
+	    TargetFunctionString = targetFunctionString;
+    }
 
-	public IEnumerable<double> SolveByNewtonsMethod(Func<double[], double>[,] jacobianMatrix, double[] initialApproximation, double accuracy)
+	public double[] SolveByNewtonsMethod(out double lambda)
 	{
-		if (jacobianMatrix.GetLength(1) != _vectorFunction.Length)
+		if (_jacobianMatrix.GetLength(1) != _vectorFunction.Length)
 			throw new Exception("The number of columns of the Jacobian matrix must be equal to the dimension of the vector function");
 
-		if (ComputeDeterminantMatrix(CalculateJacobianMatrix(jacobianMatrix, initialApproximation)) == 0)
+		if (ComputeDeterminantMatrix(CalculateJacobianMatrix(_jacobianMatrix, _initialApproximation)) == 0)
 			throw new Exception("With the initial approximation introduced, the Jacobi matrix has a zero determinant. Enter a different initial guess");
 		
-		double[] approximation = initialApproximation, lastApproximation;
+		double[] approximation = _initialApproximation, lastApproximation;
 		do
 		{
 			lastApproximation = approximation;
 			approximation = VectorSub(lastApproximation,
-				MatrixMultipliedByVector(InvertAMatrixUsingTheCholeskyMethod(CalculateJacobianMatrix(jacobianMatrix, lastApproximation)),
+				MatrixMultipliedByVector(InvertAMatrixUsingTheCholeskyMethod(CalculateJacobianMatrix(_jacobianMatrix, lastApproximation)),
 					CalculateVectorFunction(lastApproximation)));
-		} while (!AccuracyAchieved(approximation, lastApproximation, accuracy));
+		} while (!AccuracyAchieved(approximation, lastApproximation, _accuracy));
+
+		lambda = approximation[^1];
+		Array.Resize(ref approximation, approximation.Length - 1);
 
 		return approximation;
 	}
@@ -203,6 +216,20 @@ public class SystemOfNonlinearEquations
         
 		return result;
 	}
+	
+	public Func<double[], double> LimitFunction { get;  }
+	
+	public Func<double[], double> TargetFunction { get;  }
+
+	public string LimitFunctionString { get; }
+	
+	public string TargetFunctionString { get; }
 
 	private readonly Func<double[], double>[] _vectorFunction;
+
+	private readonly Func<double[], double>[,] _jacobianMatrix;
+
+	private readonly double[] _initialApproximation;
+
+	private readonly double _accuracy;
 }

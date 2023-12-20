@@ -21,18 +21,9 @@ internal static class Program
 
 	private static void SolveTheAssignmentProblemUsingTheHungarianAlgorithm()
 	{
-		Console.WriteLine("Корректность вводимой матрицы в файле \"CostTable.txt\" зависит только от Вас - программа не проверяет правильность вводимой матрицы. Если Вы нарушите первое правило, то программа вернет какое-нибудь стандартное исключение (скорее всего что-то типа \"Index out of range\"). Если второе - \"Capacity cannot be less than zero\".");
-		Console.WriteLine();
-		Console.WriteLine("Правило №1: кол-во эл-ов в строках и кол-во самих строк не должно быть меньше введенной размерности;");
-        Console.WriteLine("Правило №2: кол-во эл-ов в строках и кол-во самих строк не должно быть больше введенной размерности;");
-        Console.WriteLine("Правило №3: разделителем между эл-ами строки должен быть один пробел.");
-        Console.WriteLine();
-		
-		Console.Write("Введите размерность матрицы, прописанной в файле \"CostTable.txt\" (если введете число меньше 2, то будет взята стандартная таблица из варианта 32 контрольной работы): ");
-		var dimensionOriginal = Convert.ToInt32(Console.ReadLine());
-		Console.WriteLine();
+		Console.Write("Введите любую непустую последовательность, если хотите прочитать матрицу стоимостей из файла \"CostTable.txt\". В противном случае будет взята стандартная таблица из варианта 32 контрольной работы): ");
 		double[,] originalCostTable;
-		if (dimensionOriginal < 2)
+		if (string.IsNullOrWhiteSpace(Console.ReadLine()))
 		{
 			originalCostTable = new double[,]
 			{
@@ -44,6 +35,8 @@ internal static class Program
 		}
 		else
 			originalCostTable = MatrixReaderFromFile.LoadMatrix("CostTable.txt");
+		
+		Console.WriteLine();
 	    
 	    var theAssignmentProblem = new TheAssignmentProblem(originalCostTable);
 	    var theAssignmentProblemDto = theAssignmentProblem.HungarianAlgorithm();
@@ -75,24 +68,39 @@ internal static class Program
 	
 	private static void SolveANonlinearProgrammingProblemUsingTheLagrangeMultiplierMethod()
 	{
-		SelectAProblem(out var vectorFunction, out var jacobianMatrix, out var initialApproximation);
-		
 		Console.Write("Введите точность: ");
 		var accuracy = Convert.ToDouble(Console.ReadLine());
 		
-		var systemOfNonlinearEquations = new SystemOfNonlinearEquations(vectorFunction);
-		var result = systemOfNonlinearEquations.SolveByNewtonsMethod(jacobianMatrix, initialApproximation, accuracy);
+		var systemOfNonlinearEquations = SelectAProblem(accuracy);
+		
+		var result = systemOfNonlinearEquations.SolveByNewtonsMethod(out var lambda);
 
-		foreach (var root in result)
-			Console.Write($"{root}, ");
+		Console.Write("x* = { ");
+		var resultString = result.Aggregate("", (current, root) => current + $"{root}, ");
+		resultString = resultString.Remove(resultString.Length - 2);
+		Console.Write($"{resultString} }}");
+		
+		Console.WriteLine();
+		Console.WriteLine(systemOfNonlinearEquations.TargetFunctionString);
+		Console.WriteLine($"f(x*) = {systemOfNonlinearEquations.TargetFunction(result)}");
+		Console.WriteLine(systemOfNonlinearEquations.LimitFunctionString);
+		Console.WriteLine($"h(x*) = {systemOfNonlinearEquations.LimitFunction(result)}");
+		
+		Console.WriteLine();
+		Console.WriteLine($"Lambda coefficient = {lambda}");
 	}
 
-	private static void SelectAProblem(out Func<double[], double>[] vectorFunction, out Func<double[], double>[,] jacobianMatrix, out double[] initialApproximation)
+	private static SystemOfNonlinearEquations SelectAProblem(double accuracy)
 	{
 		Console.WriteLine("Ниже программа попросит Вас ввести координаты точки начального приближения. Настоятельно не рекомендую вводить нули или числа около нуля - есть шанс получить матрицу Якоби с нулевым детерминантом и тогда ее инвертация станет невозможной и программа вернет не числа");
 		Console.Write("Введите номер решаемой ЗНП (от 1 до 3, в противном случае будет выбрана 1 ЗНП, сами ЗНП смотрите в файле \"Problems.png\"): ");
 		var problemNumber = Convert.ToInt32(Console.ReadLine());
-		
+
+		Func<double[], double>[] vectorFunction;
+		Func<double[], double>[,] jacobianMatrix;
+		Func<double[], double> targetFunction, limitFunction;
+		string limitFunctionString, targetFunctionString;
+		double[] initialApproximation;
 		switch (problemNumber)
 		{
 			case 1:
@@ -108,6 +116,10 @@ internal static class Program
                 	{ _ => 0, args => 2 - 2 * args[2], args => -2 * args[1] },
                 	{ args => -2 * args[0], args => -2 * args[1], _ => 0 }
                 };
+				limitFunction = (args) => 4d - Math.Pow(args[0], 2d) - Math.Pow(args[1], 2d);
+				targetFunction = (args) => 1d + Math.Pow(args[0] - 6d, 2d) + Math.Pow(args[1] - 8d, 2d);
+				limitFunctionString = "h(x) = 4 - x1^2 - x2^2 = 0";
+				targetFunctionString = "f(x) = 1 + (x1 - 6)^2 + (x2 - 8)^2";
 				initialApproximation = new double[3];
 				GetInitialApproximation(initialApproximation);
 				break;
@@ -124,6 +136,10 @@ internal static class Program
 					{ _ => 0, _ => 2, _ => 1 },
 					{ _ => 2, _ => 1, _ => 0 }
 				};
+				limitFunction = (args) => 2d * args[0] + args[1] - 2;
+				targetFunction = (args) => Math.Pow(args[0], 2d) + Math.Pow(args[1], 2d);
+				limitFunctionString = "h(x) = 2x1 + x2 - 2 = 0";
+				targetFunctionString = "f(x) = x1^2 + x2^2";
 				initialApproximation = new double[3];
 				GetInitialApproximation(initialApproximation);
 				break;
@@ -140,12 +156,18 @@ internal static class Program
 					{ _ => 0, _ => 2, _ => 1 },
 					{ _ => 1, _ => 1, _ => 0 }
 				};
+				limitFunction = (args) => args[0] + args[1] - 5;
+				targetFunction = (args) => Math.Pow(args[0] - 4d, 2d) + Math.Pow(args[1] - 4d, 2d);
+				limitFunctionString = "h(x) = x1 + x2 - 5 = 0";
+				targetFunctionString = "f(x) = (x1 - 4)^2 + (x2 - 4)^2";
 				initialApproximation = new double[3];
 				GetInitialApproximation(initialApproximation);
 				break;
 			default:
 				goto case 1;
 		}
+		
+		return new SystemOfNonlinearEquations(vectorFunction, jacobianMatrix, initialApproximation, accuracy, limitFunction, limitFunctionString, targetFunction, targetFunctionString);
 	}
 	
 	private static void GetInitialApproximation(IList<double> initialApproximation)
